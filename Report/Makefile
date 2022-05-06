@@ -1,5 +1,5 @@
 DEFAULT_DATAPATH=/mounts/Datasets3/ChallengeDeep/train
-DEFAULT_TESTCSV=./gt_all.csv
+DEFAULT_TESTCSV=../data/gt_all.csv
 
 all:paper.pdf
 
