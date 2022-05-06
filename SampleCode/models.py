@@ -19,7 +19,6 @@
 
 import torch
 import torch.nn as nn
-import torchvision.models
 import torchvision.models.resnet as resnet
 import timm
 import timm.models.layers
@@ -83,8 +82,8 @@ class SimpleCNNRF(nn.Module):
 
     def forward(self, x):
         self.feature_maps = []
-        for l in self.features:
-            x = l(x)
+        for layer in self.features:
+            x = layer(x)
             self.feature_maps.append(x)
         x = x.view(x.size()[0], -1)
         return self.classifier(x)
