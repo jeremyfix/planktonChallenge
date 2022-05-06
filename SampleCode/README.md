@@ -1,5 +1,7 @@
 # Sample code for a plankton classifier
 
+The code is released under **GPL v3.0 license**.
+
 Before training, we first preprocess the images :
 
 ```
