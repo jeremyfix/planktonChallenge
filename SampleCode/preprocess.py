@@ -16,13 +16,14 @@ import logging
 import argparse
 import pathlib
 import os
-import shutil
 
 # External modules
 import tqdm
 
 # Local modules
 import data
+
+IMAGE_IDX_FILEWIDTH = 6
 
 
 def process_dataset(dataset, outputdir):
@@ -35,10 +36,15 @@ def process_dataset(dataset, outputdir):
 
         if not output_filedir.exists():
             os.makedirs(output_filedir)
-        if img_idx[y] >= 1e7:
+        if len(str(img_idx[y])) >= IMAGE_IDX_FILEWIDTH:
             raise ValueError(
-                "Our image filename format expects a number of images <= 1 000 000"
+                "Our image filename format expects a number of images <= 1"
+                + "0" * IMAGE_IDX_FILEWIDTH
             )
+        # If the following assert is not true
+        # we need to adapt the f-string format below
+        # do not know how to that with a variable
+        assert IMAGE_IDX_FILEWIDTH == 6
         output_filepath = output_filedir / f"{img_idx[y]:06d}.jpg"
         img_idx[y] += 1
         X.save(output_filepath)
@@ -64,12 +70,10 @@ if __name__ == "__main__":
     parser.add_argument("--outputdir", type=pathlib.Path, required=True)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--batch_size", type=int, default=64)
-    parser.add_argument("--val_ratio", type=float, default=0.1)
+    parser.add_argument("--val_ratio", type=float, default=0.05)
 
     args = parser.parse_args()
     if args.outputdir.exists():
-        logging.info("The datadir exists, we use it")
-        # logging.info(f"Removing {outputdir}")
-        # shutil.rmtree(outputdir)
+        logging.info("The datadir exists, nothing to be done")
     else:
         main(args)
