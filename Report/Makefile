@@ -1,5 +1,7 @@
 DEFAULT_DATAPATH=/mounts/Datasets3/ChallengeDeep/train
 DEFAULT_TESTCSV=../data/gt_all.csv
+DEFAULT_PARTICIPANTS_CSV=../data/participants_csv
+DEFAULT_CLASSNAMES=../data/class_names.csv
 
 all:paper.pdf
 
@@ -19,6 +21,11 @@ scorestime: ./data/scoresKaggle.html
 	cd scripts && python3 parse_scores.py ../data/scoresKaggle.html
 
 
-paper.pdf: paper.tex collage clastats scorestime
+classteamf1:
+	cd scripts && python3 plot_best_submissions.py $(DEFAULT_TESTCSV) $(DEFAULT_PARTICIPANTS_CSV) $(DEFAULT_CLASSNAMES)
+
+
+
+paper.pdf: paper.tex collage clastats scorestime classteamf1
 	latexmk -pdf paper.tex
 
