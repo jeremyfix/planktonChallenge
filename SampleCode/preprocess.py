@@ -36,6 +36,7 @@ import os
 
 # External modules
 import tqdm
+import torch
 
 # Local modules
 import data
@@ -43,9 +44,15 @@ import data
 IMAGE_IDX_FILEWIDTH = 6
 
 
-def process_dataset(dataset, outputdir):
+def process_dataset(dataset: torch.data.Dataset, outputdir: pathlib.Path):
+    """Loads and apply the transform on every image of a dataset
+
+    Args:
+        dataset (torch.data.Dataset) : a mappable dataset
+        outputdir (Pathlib.path) : an output dir to save the data in
+    """
     img_idx = {}
-    logging.info(f"Processsing {len(dataset)} objects in {outputdir}")
+    logging.info(f"Processing {len(dataset)} objects in {outputdir}")
     for X, y in tqdm.tqdm(dataset):
         if y not in img_idx:
             img_idx[y] = 0
@@ -68,6 +75,11 @@ def process_dataset(dataset, outputdir):
 
 
 def main(args):
+    """Precompte the training and validation images (resize them all)
+
+    Args:
+        args (dict): the parameters of the transform, data dir and output dir
+    """
     logging.info("Loading the images")
     train_dataset, valid_dataset = data.load_dataset(
         args.datadir,
