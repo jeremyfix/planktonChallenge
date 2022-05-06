@@ -101,6 +101,15 @@ def create_image(source_path, target_path, maxsize, rotation):
 
 
 if __name__ == "__main__":
+
+    license = """
+    prepare_data.py  Copyright (C) 2022  Jeremy Fix
+    This program comes with ABSOLUTELY NO WARRANTY;
+    This is free software, and you are welcome to redistribute it
+    under certain conditions;
+    """
+    print(license)
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
     parser = argparse.ArgumentParser()

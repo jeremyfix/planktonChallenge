@@ -458,6 +458,14 @@ def test(args):
 
 
 if __name__ == "__main__":
+    license = """
+    prepare_data.py  Copyright (C) 2022  Jeremy Fix
+    This program comes with ABSOLUTELY NO WARRANTY;
+    This is free software, and you are welcome to redistribute it
+    under certain conditions;
+    """
+    print(license)
+
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["train", "test", "stats"])
