@@ -15,8 +15,10 @@ clastats: figs/stats.pdf
 	test -s $(DEFAULT_TESTCSV) || { $(error Test csv file not available) }
 	cd scripts && python3 plot_stats.py $(DEFAULT_DATAPATH) $(DEFAULT_TESTCSV)
 
+scorestime: ./data/scoresKaggle.html
+	cd scripts && python3 parse_scores.py ../data/scoresKaggle.html
 
 
-paper.pdf: paper.tex collage clastats
+paper.pdf: paper.tex collage clastats scorestime
 	latexmk -pdf paper.tex
 

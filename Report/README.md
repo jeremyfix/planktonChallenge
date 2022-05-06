@@ -27,7 +27,10 @@ rm -rf collage && make collage
 rm figs/stats.pdf && make clastats
 ```
 
-### Generate 
+### Generate the evolution of metric through time
 
+**Requirements** : the kaggle score page html
 
-
+```
+rm figs/public-test.pdf figs/private-test.pdf && make scorestime
+```
