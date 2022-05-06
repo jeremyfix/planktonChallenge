@@ -36,7 +36,6 @@ import deepcs.display
 import deepcs.fileutils
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
@@ -51,8 +50,17 @@ import data
 import models
 import utils
 
+# Image mean and std can be computed by calling the "stats" function
+IMAGE_MEAN = 0.92
+IMAGE_STD = 0.16
+
 
 def stats(args):
+    """Computes the mean/std over all the pixels of the training data
+    The statistics are displayed in the console
+    Args:
+        args (dict): the parameters for loading the data
+    """
     print("Stats")
 
     use_cuda = torch.cuda.is_available()
@@ -86,38 +94,38 @@ def stats(args):
 
 
 def train(args):
-    print("Training")
+    """Train a neural network on the plankton classification task
+
+    Args:
+        args (dict): parameters for the training
+
+    Examples::
+
+        python3 main.py train --normalize --model efficientnet_b3
+    """
+    logging.info("Training")
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda") if use_cuda else torch.device("cpu")
 
-    # Get the data
-    # train_transforms = [
-    #     ImageOps.grayscale,
-    #     transforms.ToTensor()
-    # ]
-    # if args.normalize:
-    #     train_transforms.append(transforms.Normalize((0.92, ), (0.16, )))
-    # train_transforms.append(transforms.RandomRotation(180, fill=1.0))
-    # train_transforms = transforms.Compose(train_transforms)
-
+    # Set up the train and valid transforms
     train_transforms = [
+        ImageOps.GrayScale,
         A.HorizontalFlip(),
         A.VerticalFlip(),
         A.MotionBlur(),
-        A.CoarseDropout(fill_value=(255, 255, 255), max_height=20, max_width=20),
-        A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=(255, 255, 255)),
+        A.CoarseDropout(fill_value=255, max_height=20, max_width=20),
+        A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=255),
         data.ScaleBrightness(scale_range=(0.8, 1.0)),
-        data.KeepChannel(0, always_apply=True),
     ]
     if args.normalize:
-        train_transforms.append(A.Normalize((0.92,), (0.16,)))
+        train_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
     train_transforms.append(ToTensorV2())
     train_transforms = A.Compose(train_transforms)
 
-    valid_transforms = [ImageOps.grayscale, transforms.ToTensor()]
+    valid_transforms = [ImageOps.grayscale, ToTensorV2()]
     if args.normalize:
-        valid_transforms.append(transforms.Normalize((0.92,), (0.16,)))
+        valid_transforms.append(transforms.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
     valid_transforms = transforms.Compose(valid_transforms)
 
     loaders = data.load_preprocessed_data(
@@ -133,21 +141,6 @@ def train(args):
     )
     train_loader, valid_loader, n_samples_per_class = loaders
 
-    num_classes = len(train_loader.dataset.classes)
-    print(num_classes)
-
-    # Check the number of samples per class
-    # logging.info('Samples counting')
-    # n_samples_per_class = {
-    #     'train': [0]*num_classes,
-    #     'valid': [0]*num_classes
-    # }
-    # for _, y in tqdm.tqdm(train_loader):
-    #     for i in y:
-    #         n_samples_per_class['train'][i] += 1
-    # for _, y in tqdm.tqdm(valid_loader):
-    #     for i in y:
-    #         n_samples_per_class['valid'][i] += 1
     num_classes = len(n_samples_per_class["train"])
     logging.info(f"Considering {num_classes} classes")
 
@@ -168,6 +161,7 @@ def train(args):
         loss = bce_loss
     else:
         loss = utils.FocalLoss(gamma=0.5)
+        logging.warn("Class weights are not used with the Focal loss")
 
     # Make the optimizer
     optimizer = torch.optim.Adam(
@@ -262,6 +256,17 @@ def train(args):
 
 
 def test(args):
+    """Test a neural network on the plankton classification task test data
+
+    The parameters are loaded from args['modelpath']/best_model.pt
+
+    Args:
+        args (dict): parameters for the testing
+
+    Examples::
+
+        python3 main.py test --normalize --model efficientnet_b3 --modelpath
+    """
     if not args.modelpath:
         raise ValueError("The modelpath must be provided")
 
@@ -272,10 +277,10 @@ def test(args):
     test_transforms = [
         data.Resize(data.__default_size[0]),
         ImageOps.grayscale,
-        transforms.ToTensor(),  # ,
+        transforms.ToTensor(),
     ]
     if args.normalize:
-        test_transforms.append(transforms.Normalize((0.92,), (0.16,)))
+        test_transforms.append(transforms.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
     test_transforms = transforms.Compose(test_transforms)
 
     loader = data.load_test_data(
