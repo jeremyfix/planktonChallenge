@@ -34,3 +34,21 @@ rm figs/stats.pdf && make clastats
 ```
 rm figs/public-test.pdf figs/private-test.pdf && make scorestime
 ```
+
+### Generate the F1 scores distributions
+
+**Requirements**: the participants csv, the class names csv and public/private test set csv
+
+```
+rm figs/class_f1_scores_per_team.pdf figs/class_f1_scores_per_class.pdf ./figs/table_best_predicted.tex
+./figs/table_worst_predicted.tex &&  make classteamf1
+```
+
+### Generate the confusion matrices
+
+
+**Requirements**: the participants csv, the class names csv and public/private test set csv
+
+```
+rm -rf figs/confusion* && make confusion
+```
