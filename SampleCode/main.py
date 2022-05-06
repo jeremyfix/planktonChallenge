@@ -61,7 +61,7 @@ def stats(args):
     Args:
         args (dict): the parameters for loading the data
     """
-    print("Stats")
+    logging.info("Computing the statistics over the training images")
 
     use_cuda = torch.cuda.is_available()
     device = torch.device("cuda") if use_cuda else torch.device("cpu")
@@ -90,7 +90,7 @@ def stats(args):
         )  # Mean over num_pixels
     std_pix /= num_imgs
     std_pix = math.sqrt(std_pix)
-    print(f"Mean pixel value : {mean_pix} (std {std_pix})")
+    logging.info(f"Mean pixel value : {mean_pix} (std {std_pix})")
 
 
 def train(args):
@@ -202,7 +202,7 @@ def train(args):
 
     with open(logdir / "summary.txt", "w") as f:
         f.write(summary_text)
-    print(summary_text)
+    logging.info(summary_text)
 
     # Callbacks
     tensorboard_writer = SummaryWriter(log_dir=logdir)
@@ -230,7 +230,7 @@ def train(args):
         test_metrics = deepcs.testing.test(model, valid_loader, device, val_metrics)
         macro_F1, class_F1 = utils.f1_metric(model, valid_loader, device)
         updated = model_checkpoint.update(macro_F1)
-        print(
+        logging.info(
             "[%d/%d] Test:   Loss : %.3f | F1 : %.3f | Acc : %.3f%% %s"
             % (
                 e,
@@ -242,7 +242,7 @@ def train(args):
             )
         )
 
-        print(f"Class F1 : {class_F1}")
+        logging.info(f"Class F1 : {class_F1}")
         # Confusion matrix
         cm = utils.make_confusion_matrix(model, valid_loader, device, num_classes)
         fig = utils.plot_confusion_matrix(cm)
@@ -349,7 +349,7 @@ if __name__ == "__main__":
     This is free software, and you are welcome to redistribute it
     under certain conditions;
     """
-    print(license)
+    logging.info(license)
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser()
