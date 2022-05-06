@@ -135,7 +135,7 @@ The images vary in size. During the prepation of the dataset, the images were re
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=0.3\columnwidth]{figs/size_train.png}
-		\includegraphics[width=0.3\columnwidth]{figs/sizes_test.pdf}
+		\includegraphics[width=0.3\columnwidth]{figs/sizes_test.png}
 		\includegraphics[width=0.3\columnwidth]{figs/size_orig.png}
 	\end{center}
 	\caption{\label{fig:sizes} Distribution of the image sizes for the training set (left), test set(right) and the original dataset (right). On the plot on the right, the original sizes have been limited to $4000$ for both widths and heights but there exists outliers up to $10000$ in width or $12000$ in height.}
@@ -356,13 +356,13 @@ The last analysis we provide is the construction of the confusion matrices for a
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_cestquilepatron.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_deepwhale.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_granderegazzoni.png}&
-	\includegraphics[width=0.18\columnwidth]{conffigs/usion_matrix_TheBackpropagatedStubborns.png}\\
+        \includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_TheBackpropagatedStubborns.png}\\
 		SpongeBob & C'est qui l'patron & DeepWhalfigs/e & GrandeRegazzoni & The Backpropagated Stubborns\\
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_MetzDreamDeep.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_voleursDhuile.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_JMBmc.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_AG0D.png}&
-	\includegraphics[width=0.18\columnwidth]{conffigs/usion_matrix_ResMetz.png}\\
+        \includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_ResMetz.png}\\
 		Metz Dream Deep & Voleurs d'Huile & JMBmcfigs/ & AG0D\\
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_CelestineFeuillat.png}&
 		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_LesJongleurs.png}&
@@ -391,7 +391,7 @@ Looking at the misclassification, it reveals that some of them would have been h
 The table below indicates the number of samples per class for each fold. The list is ordered from the most frequent to the least frequent classes.
 
 % python3 plot_stats.py /opt/Datasets/ZooScan/train /opt/Datasets/ZooScan/derived.csv
-\input{stat_table.tex}
+\input{./figs/stat_table.tex}
 
 \pagebreak\newpage
 \section*{Some examples for each class}
