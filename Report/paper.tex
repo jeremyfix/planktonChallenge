@@ -1,0 +1,401 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{pdflscape}
+\usepackage{afterpage}
+\extrafloats{200}
+\maxdeadcycles=1000
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2021
+
+% ready for submission
+\usepackage[final]{neurips_2021}
+
+% to compile a preprint version, e.g., for submission to arXiv, add add the
+% [preprint] option:
+%     \usepackage[preprint]{neurips_2021}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+%     \usepackage[final]{neurips_2021}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2021}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+
+\title{Results from the deep learning challenge associated with the 3MD4040 lecture on plankton classification}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to break the
+% lines. Using \AND forces a line break at that point. So, if LaTeX puts 3 of 4
+% authors names on the first line, and the last on the second line, try using
+% \AND instead of \And before the third author name.
+
+\author{%
+Jérémy Fix\\
+\textit{LORIA, CNRS,} \\
+\textit{Université de Lorraine, CentraleSupélec}\\
+Gif-sur-Yvette, France \\
+\texttt{jeremy.fix@centralesupelec.fr}
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	This year, the deep learning lecture on the Metz campus of CentraleSupélec was evaluated by the participation to a custom challenge on plankton classification hosted on Kaggle. This
+	paper presents the competition and the results obtained by the 13 "competing"
+	teams. The challenge was hosted on kaggle \url{https://www.kaggle.com/c/3md4040-2022-challenge}.
+\end{abstract}
+
+\section{Context}
+
+\subsection{Why a challenge}
+
+I used to evaluate the deep learning lecture by a standard paper and pen exam. But I always thought that was not the best way to evaluate the students because deep learning is a know-how in addition to a theoretical understanding of the concepts. You cannot obtain reasonnable performance with your deep learning code if you do not understand what is going on. There are so many degrees of freedom that a random exploration of the hyperparameters is hopeless.
+
+The challenge lasted approximately 2 months, started in December 2021 and ended beginning of February 2022.
+
+\subsection{Grading}
+
+Grading of the students' contributions is on three topics :
+\begin{itemize}
+	\item the performance on the leaderboard for 5 points
+	\item the quality of the 20 minutes long video recorded presentation for 5 points
+	\item the quality of the code and experimentations for 10 points
+\end{itemize}
+
+I once asked orally to provide a little article presenting the experimental track but forgot to mention it on the grading page and therefore did not ask for it at the end of the challenge.
+
+For the performance on the leaderboard, the points were allocated as~:
+\begin{itemize}
+	\item 1 point if the submitted predictor performs better than a benchmark linear network
+	\item 2 points if the submitted predictor performas better than a benchmark basic CNN network
+	\item 2 points if the submitted predictor ranks first
+\end{itemize}
+
+\subsection{Rules}
+
+The students were asked to respect the following rules :
+\begin{itemize}
+	\item the predictor must be a neural network
+	\item the code must be in pytorch. Using higher level framework such as pytorch lightning was allowed
+	\item the students were not allowed to share codes between the teams
+	\item the students were allowed and strongly encouraged to ask questions on a dedicated forum and they would be provided hints under the condition that the previous rules were not violated
+\end{itemize}
+
+In practice, video sessions were organized with the groups that had the most difficulties to come into the challenge.
+
+
+%-----------------------------------------------------------------------------------
+\section{The challenge on plankton classification}
+
+The data for the challenge come from the ZooScanNet dataset (\url{https://www.seanoe.org/data/00446/55741/}). It contains 1,433,278 images sorted in 93 taxa. We only used the images and not the native nor skimage features that were provided. It does not mean that these handcrafted features could not be useful for plankton classification, it is just the the challenge focused exclusively on image classifcation (but definitely, a later issue should include them).
+
+\subsection{Data preparation}
+
+Three folds were prepared from the original data :
+\begin{itemize}
+	\item a training set of 855.394 images
+	\item a public test set of 47.473 images
+	\item a private test set of 47.472 images
+\end{itemize}
+
+We did not kept all the classes from the original 93 taxa. Five classes were ignored : \emph{badfocus\_artefact}, \emph{badfocus\_Copepoda}, \emph{bubble}, \emph{multiple\_\_Copepoda} and \emph{multiple\_\_other}. Three classes were fused : \emph{detritus}, \emph{fiber\_\_detritus} and \emph{seaweed}. Therefore, at the end, we get a total of $86$ classes. We also kept a maximum of $200.000$ per classes (before merging classes which explains why the detritus has more than $200000$ samples).
+
+One concern in preparing the data challenge is to prevent cheating such as overfitting the original dataset (which then comprise the test data). To prevent the challengers from cheating, a random rotation was applied to the image.
+
+
+\subsection{Data statistics}
+
+All the sets were identically balanced, i.e. the classes are imbalanced but imbalanced in the same proportions irrespectively of the fold. After the challenge, rereading the different classes, it might have been worth fusing artefact with detritus, and also maybe some egg classes. There are also two classes for tail and head which might gather tails and heads of different species which in no way can be considered as a single class. These two classes should have probably been discarded.
+
+\begin{figure}
+	\includegraphics[width=\columnwidth]{figs/stats.pdf}
+	\caption{\label{fig:classdistrib} The distribution of samples per classes. See the appendix for the details, especially the class names}
+\end{figure}
+
+The distribution of the samples over the different folds is shown on figure~\ref{fig:classdistrib}. The dataset is imbalanced and that was one interest of the challenge. The class with the most samples is the detritus followed by the Calanoida. The class with the lowest number of samples is the Ctenophora which has only $36$ samples in the training set and $1$ sample in both the public and private test sets.
+
+The images vary in size. During the prepation of the dataset, the images were resized so that their height and width do not exceed $300$, keeping their aspect ratio. Athough the original images vary in sizes, this choice was made to keep the weight of the whole dataset reasonnable. Note however that this choice may have introduced difficulties in the recognition process (which could have been mitigated by providing the handcrafted features). Indeed, this resize erases class specific shape distributions. The distribution of heights and widhts of the datasets are shown on figure~\ref{fig:sizes}, left for the training set, \ref{fig:sizes}, middle for the test set and \ref{fig:sizes}, right for the original images. For practical simplicity, only the size plot of the training set indicates the class belongings.
+
+
+\begin{figure}
+	\begin{center}
+		% \includegraphics[width=0.3\columnwidth]{figs/size_train.png}
+		% \includegraphics[width=0.3\columnwidth]{figs/sizes_test.pdf}
+		% \includegraphics[width=0.3\columnwidth]{figs/size_orig.png}
+	\end{center}
+	\caption{\label{fig:sizes} Distribution of the image sizes for the training set (left), test set(right) and the original dataset (right). On the plot on the right, the original sizes have been limited to $4000$ for both widths and heights but there exists outliers up to $10000$ in width or $12000$ in height.}
+\end{figure}
+
+%TODO: Plot size distribution as a 2D scatter plot
+
+\subsection{Evaluation metrics}
+
+The challenge is a classification challenge with strongly imbalanced classes. The competitors were evaluated with the macro-average F1 score which is the average of the class F1 scores.
+
+The class F1 score is defined as the harmonic mean of the precision and recall. Given a class $k$, the number of true positives $TP_k$, false positive $FP_k$, and false negatives $FN_k$, precision, recall and $F1$ are computed as~:
+\begin{eqnarray*}
+	precision_k &=& \frac{TP_k}{TP_k + FP_k}\\
+	recall_k &=& \frac{TP_j}{TP_k + FN_k}\\
+	\frac{1}{F1_k} &=& \frac{1}{2}(\frac{1}{precision_k} + \frac{1}{recall_k})
+\end{eqnarray*}
+
+The macro-average F1 is then defined as the average of all the classes~:
+
+\begin{equation}
+	\mbox{macro-F1} = \frac{1}{86}\sum_{k=0}^{85} F1_k
+\end{equation}
+
+%-----------------------------------------------------------------------------------
+\section{The submissions of the participants}
+
+In the next section, we give a quick overview of the different techniques involved by the participants for the different topics of : 
+
+\begin{itemize}
+	\item data loading 
+	\item data augmentation
+	\item classification model architectures
+	\item optimization setup (optimizer, scheduler, ..)
+	\item handling of the class imbalance
+\end{itemize}
+
+That overview is built from inspection of the submitted codes and may not reflect all the configurations that have been tested by the participants. The collected information from the code are summarized in tables~\ref{table:overview1},\ref{table:overview2},\ref{table:overview3}.
+
+\afterpage{
+	\clearpage
+	\thispagestyle{empty}
+	\begin{landscape}
+		\begin{table}
+			\begin{tabular}{p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}}
+			Participant & Data preprocessing & Train augmentation & Test augmentation & Model architectures & Optimizer and scheduler & Class imbalance \\
+			\hline
+			SpongeBob & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			HFlip($0.5$), VFlip($0.5$) , Rotate($-40, 40$), Translate($0.3, 0.5)$, Scale($0.7, 1.3$), Shear($-30, 30$)&
+			None &
+			Custom ConvNet, Pretrained torchvision ResNet, AlexNet, DenseNet121, timm ViT, EfficientNetB2, ConvNeXt, RegNetx\_320, EfficientNetv2\_rw\_t, BeIT, CoaT&
+			Cross Entropy loss, Adam(lr=$5e-4$), ReduceLROnPlateau(validation loss), early stopping on validation F1, Batch size $64$,  Random train/valid split ($0.95, 0.05$)&
+			Class weights in the CE loss\\
+			\hline
+			DeepWhale & 
+			Pad/Resize($224$), ImageNet normalization&
+			HFlip($0.5$), VFlip($0.5$), Rotate($-150, 150$)&
+			None& 
+			Custom CNN, pretrained ResNet50, 101, 152, VGG19, SqueezeNet from torchvision&
+			Cross EntropyLoss, SGD($1e-3$), ReduceLROnPlateau(validation loss), early stopping on the validation loss, batch size $32$, train/valid split ($0.8, 0.2$) per class &
+			batch sampler with $f_k = 1/count_k$\\
+			\hline
+			GrandeRegazzoni & 
+			SquarePad($300$) or ResizeCrop($128$) or Resize($150$)&
+			HFlip($0.5$), VFlip($0.5$), Rotate($-40, 40$), Translate($-0.2, 0.2$)&
+			None&
+			Custom ConvNet, EfficientNet\footnote{\url{https://github.com/lukemelas/EfficientNet-PyTorch}}, HRNet, ResNet, SwinTransformer&
+			Cross Entropy loss, Adam($1e-3$), ReduceLROnPlateau(validation F1), early stopping on the validation loss, Batch size $128$, train/valid split ($0.8, 0.2$) per class &
+			batch sampler with $f_k = 1/count_k$\\
+			\hline
+			Voleurs d'huile&
+			Resize($224$), z-score normalization by training mean/std&
+			HFlip($0.5$), VFlip($0.5$), Gaussian Blur&
+			None&
+			Custom CNN, pretrained torchvision ResNet and DenseNet121 & 
+			Cross Entropy loss, Adam($4e-4$), StepLR($\gamma=0.1, step=6$), early stopping on the validation loss, Batch size $32$, train/valid split ($0.8, 0.2$) &
+			None\\
+			\hline
+		\end{tabular}
+			\caption{Overview of the experiments of the participants. Part 1. \label{table:overview1}}
+	\end{table}
+
+		\begin{table}
+			\begin{tabular}{p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}}
+			Participant & Data preprocessing & Train augmentation & Test augmentation & Model architectures & Optimizer and scheduler & Class imbalance \\
+			\hline
+			Metz Dream Deep & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+				Rotate($0, 360$), HFlip($0.5$), Translate($0.2$), Normalization$(0.5, 0.5$)&
+			None&
+			&
+				Cross entropy loss, Adam($1e-4$), Weight decay $1e-4$, ..., batch size $128$, train/valid split&
+			batch sampler $f_k=1/count_k$\\
+			\hline
+			The Backpropagated StuBBorns & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			JMBmc & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			AG0D & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+		\end{tabular}
+			\caption{Overview of the experiments of the participants. Part 2. \label{table:overview2}}
+	\end{table}
+
+		\begin{table}
+			\begin{tabular}{p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}|p{3cm}}
+			Participant & Data preprocessing & Train augmentation & Test augmentation & Model architectures & Optimizer and scheduler & Class imbalance \\
+			\hline
+			ResMetz & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			CelestineFeuillat & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			LesJongleurs & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			DeepBeru4s & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+			\hline
+			The Whale Sharks & 
+			Resize($224$), Normalize($0.5$, $0.5$) & 
+			&
+			&
+			&
+			&
+			\\
+		\end{tabular}
+			\caption{Overview of the experiments of the participants. Part 3. \label{table:overview3}}
+	\end{table}
+	\end{landscape}
+	\clearpage
+}
+
+Some of the participants also considered model averaging :
+
+SpongeBox , GrandeRegazzoni (convenet, hrnet, efficientnet)
+
+%TODO :Verifier le cout du padding : Fill value ?? 0.0 par défaut mais pour du blanc c'est 1.0 ?!
+
+\subsection{The scores of the participants through time}
+
+I find it interesting to see how the submissions of the participants improved through time. The teams submitted from 5 to 79 entries and the scores they obtained on the public and private test sets are shown on figure~\ref{fig:F1scores}.
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=0.45\columnwidth]{figs/public-test.pdf}
+		\includegraphics[width=0.45\columnwidth]{figs/private-test.pdf}
+	\end{center}
+	\caption{\label{fig:F1scores} Macro F1 on the public (left) and private (right) test sets as a function of time.}
+\end{figure}
+
+\subsection{Analysis of the results}
+
+The best entries of all the teams ranged from 0.71 to 0.82 (except one outlier at 0.57) on the private leaderboard in macro average F1 score. The class F1 scores, computed from the whole test data (public and private) is displayed on figure~\ref{fig:class_f1_scores}, left. This graph displays the distribution of class F1 scores for each team, where the teams are ordered by decreasing macro average F1.
+
+\begin{figure}
+	\begin{center}
+		\raisebox{-0.5\height}{\includegraphics[width=0.25\columnwidth]{figs/class_f1_scores_per_team.pdf}}
+		\hspace*{.4in}
+		\raisebox{-0.5\height}{\includegraphics[width=0.62\columnwidth]{figs/class_f1_scores_per_class.pdf}}
+	\end{center}
+	\caption{\label{fig:class_f1_scores} Class F1 scores on the test data per team (left) and per class (right).}
+\end{figure}
+
+We can also plot the F1 scores from the class perspective rather than a team perspective. That view of the class F1 scores is shown on figure~\ref{fig:class_f1_scores}, right. This graph plots the distribution of the teams' F1 for every class. From this graph, we see that some classes are consistently well predicted (e.g. the classes $0$, $1$, $2$, $3$, $4$ and $6$) and some classes seem much harder to classify ($80$, $76$, $75$, $70$, $66$). In order to get an idea of the classes that appear to be the easiest to predict, we selected from the distribution of F1 scores, the classes for which the minimal F1 over all the teams is higher than 0.8 This choice leads to the easiest classes given in table~\ref{table:best_predicted}.
+
+\input{table_best_predicted.tex}
+
+In order to get an idea of the classes that appear to be the most difficult to predict, we selected from the distribution of F1 scores, the classes for which the maximal F1 over all the teams is smaller than 0.6. This choice leads to the hardest classes given in table~\ref{table:worst_predicted}.
+
+\input{table_worst_predicted.tex}
+
+The last analysis we provide is the construction of the confusion matrices for all the participants. These are given in figures~\ref{fig:confusion}. Note the confusion matrices have been row normalized and the figures should be understood as the fraction of a given class that has been classified as such or such class.
+
+\begin{figure}
+	\begin{tabular}{ccccc}
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_spongebob.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_cestquilepatron.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_deepwhale.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_granderegazzoni.png}&
+	\includegraphics[width=0.18\columnwidth]{conffigs/usion_matrix_TheBackpropagatedStubborns.png}\\
+		SpongeBob & C'est qui l'patron & DeepWhalfigs/e & GrandeRegazzoni & The Backpropagated Stubborns\\
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_MetzDreamDeep.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_voleursDhuile.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_JMBmc.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_AG0D.png}&
+	\includegraphics[width=0.18\columnwidth]{conffigs/usion_matrix_ResMetz.png}\\
+		Metz Dream Deep & Voleurs d'Huile & JMBmcfigs/ & AG0D\\
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_CelestineFeuillat.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_LesJongleurs.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_DeepBeru'4s.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_TheWhaleSharks.png}&\\
+		CelestineFeuillat & LesJongleurs & DeepBeru'4s & TheWhaleSharks & 
+	\end{tabular}
+	\caption{\label{fig:confusion} Confusion matrices of the best submissions of all the participants.}
+\end{figure}
+
+
+The confusion matrices allow to understand, when samples are misclassified, which are the most likely predicted classes.  Interestingly, the top ranking entries all share similar error patterns.
+
+First, there is a tendency to misclassify as class 1 which is the detritus class, the majority class. Second, for the top ranking entries, when there is misclassification the misclassification is note widespread over all the classes but peaky on only few classes. Indeed, although this is hard to see from the plot, the confusion matrix is very sparse. 
+
+Looking at the misclassification, it reveals that some of them would have been hard to prevent and it reveals an issue in the challenge preparation. For example, looking at the samples provided in appendix, the class 33 "Nectophore Abylopsitetragona" seems pretty similar to the class 52 "Nectophore Diphyidae".
+
+%TODO : check why the off diagonal elements class do not match the badly classified classes listed above. There seems to be issues for class 11 for example ..
+
+
+%-----------------------------------------------------------------------------------
+\appendix
+
+\section*{The distribution of samples per class}
+
+The table below indicates the number of samples per class for each fold. The list is ordered from the most frequent to the least frequent classes.
+
+% python3 plot_stats.py /opt/Datasets/ZooScan/train /opt/Datasets/ZooScan/derived.csv
+\input{stat_table.tex}
+
+\pagebreak\newpage
+\section*{Some examples for each class}
+
+\input{./collage/examples.tex}
+
+\end{document}
