@@ -25,7 +25,6 @@ import pathlib
 import os
 import sys
 import math
-from typing import Optional
 
 # External modules
 import tqdm
@@ -42,12 +41,6 @@ import torch.optim
 from torch.utils.tensorboard import SummaryWriter
 import torchvision.transforms as transforms
 import pandas as pd
-from sklearn.metrics import f1_score
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import numpy as np
 import cv2
 from PIL import ImageOps
 import albumentations as A
@@ -56,88 +49,7 @@ from albumentations.pytorch import ToTensorV2
 # Local modules
 import data
 import models
-
-
-def accuracy(probabilities, targets):
-    """
-    Computes the accuracy. Works with either PackedSequence or Tensor
-    """
-    with torch.no_grad():
-        if isinstance(probabilities, torch.nn.utils.rnn.PackedSequence):
-            probs = probabilities.data
-        else:
-            probs = probabilities
-        if isinstance(targets, torch.nn.utils.rnn.PackedSequence):
-            targ = targets.data
-        else:
-            targ = targets
-        if len(targ.shape) == 2:
-            # For the LabelSmooth case
-            targ = targ.argmax(axis=-1)
-        return (probs.argmax(axis=-1) == targ).double().mean()
-
-
-def f1_metric(model, loader, device):
-    with torch.no_grad():
-        model.eval()
-        pred_labels, true_labels = [], []
-        for (inputs, targets) in loader:
-            inputs, targets = inputs.to(device), targets.to(device)
-            outputs = model(inputs)
-
-            predicted_labels = outputs.argmax(axis=-1).detach().tolist()
-            pred_labels.extend(predicted_labels)
-            if len(targets.shape) == 2:
-                # For the LabelSmooth case
-                targets = targets.argmax(axis=-1)
-            true_labels.extend(targets.detach().tolist())
-        macro_F1 = f1_score(true_labels, pred_labels, average="macro")
-        class_F1 = f1_score(true_labels, pred_labels, average=None)
-    return macro_F1, class_F1
-
-
-def compute_class_weights(n_samples_per_class):
-    """
-    n_samples_per_class:dict[int] -> int
-    """
-    # example count bounds for the training set
-    # min 20, max : 305508
-    logging.info("Computing class weights")
-    num_classes = len(n_samples_per_class)
-    # Note: be carefull, n_samples_for_class is a dictionnary with possibly
-    # unordered int keys
-    counts = torch.tensor([n_samples_per_class[i] for i in range(num_classes)])
-    logging.info(f"Min class count : {min(counts)}, max : {max(counts)}")
-    return 1.0 / (counts / min(counts))
-
-
-def make_confusion_matrix(model, loader, device, num_classes):
-    with torch.no_grad():
-        logging.info("Computing the confusion matrix")
-        # pred x true
-        confusion_matrix = np.zeros((num_classes, num_classes))
-        for (X, y) in tqdm.tqdm(loader):
-            X, y = X.to(device), y.to(device)
-            pred = model(X).argmax(axis=1).to("cpu").tolist()
-            for predi, truei in zip(pred, y):
-                confusion_matrix[predi, truei] += 1
-        # We normalize the confusion matrix along the "true" direction
-        for truei in range(confusion_matrix.shape[1]):
-            ntruei = confusion_matrix[:, truei].sum()
-            if ntruei != 0:
-                confusion_matrix[:, truei] /= ntruei
-        return confusion_matrix
-
-
-def one_hot(
-    labels: torch.Tensor,
-    num_classes: int,
-    device: Optional[torch.device] = None,
-    dtype: Optional[torch.dtype] = None,
-):
-    batch_size = labels.shape
-    one_hot = torch.zeros(batch_size, num_classes, device=device, dtype=dtype)
-    return one_hot.scatter_(1, labels.unsqueeze(1), 1.0)
+import utils
 
 
 class FocalLoss(nn.Module):
@@ -149,7 +61,7 @@ class FocalLoss(nn.Module):
 
     def forward(self, predictions, target):
         probs = F.softmax(predictions, dim=1) + self.eps
-        target_one_hot = one_hot(
+        target_one_hot = utils.one_hot(
             target,
             num_classes=predictions.shape[1],
             device=predictions.device,
@@ -162,15 +74,6 @@ class FocalLoss(nn.Module):
         loss = loss_tmp.mean()
 
         return loss
-
-
-def plot_confusion_matrix(confusion_matrix):
-    fig = plt.figure(figsize=(8, 6))
-    plt.imshow(confusion_matrix, cmap=plt.get_cmap("Blues"))
-    plt.colorbar()
-    plt.ylabel("Predicted")
-    plt.xlabel("True")
-    return fig
 
 
 def stats(args):
@@ -277,7 +180,7 @@ def train(args):
     model.to(device)
 
     if args.class_weights:
-        class_weights = compute_class_weights(n_samples_per_class["train"])
+        class_weights = utils.compute_class_weights(n_samples_per_class["train"])
     else:
         class_weights = torch.ones((num_classes,))
     class_weights = class_weights.to(device)
@@ -288,7 +191,7 @@ def train(args):
     if args.loss == "BCE":
         loss = bce_loss
     else:
-        loss = FocalLoss(class_weights, gamma=0.5)
+        loss = utils.FocalLoss(class_weights, gamma=0.5)
 
     # Make the optimizer
     optimizer = torch.optim.Adam(
@@ -298,8 +201,8 @@ def train(args):
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer)
 
     # Metrics
-    metrics = {"CE": bce_loss, "accuracy": accuracy}
-    val_metrics = {"CE": bce_loss, "accuracy": accuracy}
+    metrics = {"CE": bce_loss, "accuracy": utils.accuracy}
+    val_metrics = {"CE": bce_loss, "accuracy": utils.accuracy}
 
     # Callbacks
     if args.logname is None:
@@ -355,7 +258,7 @@ def train(args):
         )
 
         test_metrics = deepcs.testing.test(model, valid_loader, device, val_metrics)
-        macro_F1, class_F1 = f1_metric(model, valid_loader, device)
+        macro_F1, class_F1 = utils.f1_metric(model, valid_loader, device)
         updated = model_checkpoint.update(macro_F1)
         print(
             "[%d/%d] Test:   Loss : %.3f | F1 : %.3f | Acc : %.3f%% %s"
@@ -371,14 +274,14 @@ def train(args):
 
         print(f"Class F1 : {class_F1}")
         # Confusion matrix
-        cm = make_confusion_matrix(model, valid_loader, device, num_classes)
-        fig = plot_confusion_matrix(cm)
+        cm = utils.make_confusion_matrix(model, valid_loader, device, num_classes)
+        fig = utils.plot_confusion_matrix(cm)
         tensorboard_writer.add_figure("confusion", fig, e)
 
         # Metrics recording
         for m_name, m_value in test_metrics.items():
             tensorboard_writer.add_scalar(f"metrics/test_{m_name}", m_value, e)
-        tensorboard_writer.add_scalar(f"metrics/fix_test_F1", macro_F1, e)
+        tensorboard_writer.add_scalar("metrics/fix_test_F1", macro_F1, e)
         scheduler.step(test_metrics["CE"])
 
 
@@ -451,7 +354,8 @@ def test(args):
         for (pathtargeti, probs) in zip(loader.dataset.samples, all_probs)
     ]
     all_probs_filename = pd.DataFrame(
-        all_probs_filename, columns=["imgname"] + [f"cls_i" for i in range(num_classes)]
+        all_probs_filename,
+        columns=["imgname"] + [f"cls_{i}" for i in range(num_classes)],
     )
     all_probs_filename.to_csv(args.modelpath / "probs.csv", index=False)
     logging.info(f"Probs saved to {args.modelpath} / probs.csv")
