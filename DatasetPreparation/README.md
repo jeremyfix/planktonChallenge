@@ -13,9 +13,11 @@ For preparing the train/test folds, you simply run the `prepare_data.py` script.
 - split in 95% for training, 5% for testing, 
 - keep a maximum of 200000 samples per class, 
 - apply random rotations to the images (to obfuscate the data hopefully preventing a cheater overfitting the original full dataset to have good scores), 
-- resize every images to 300x300,
+- resize every images to fit into 300x300,
 - skip the classes badfocus artefact, badfocus copepoda, bubble, multiple copepoda, multiple other,
 - fuze fiber detritus, seaweed and detritus
+
+Resize is done by keeping aspect ratio and only the images which have one dimension larger than 300 are shrinked so that this dimension equals 300.
 
 At the end, the dataset contains :
 
