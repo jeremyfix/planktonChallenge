@@ -61,7 +61,7 @@ class Resize:
         return pic
 
     def __repr__(self):
-        return self.__class__.__name__ + f"(self.target_size)"
+        return self.__class__.__name__ + f"{self.target_size}"
 
 
 class MyDataset(torch.utils.data.Dataset):
@@ -377,7 +377,7 @@ def test_dataloader(args):
         num_workers=4,
         pin_memory=False,
     )
-    test_loader = load_test_data(
+    _ = load_test_data(
         pathlib.Path(args.datadir) / ".." / "pubtest",
         transform=__default_transform,
         batch_size=64,
@@ -404,7 +404,6 @@ class AugmentedDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img, label = self.dataset[idx]
         img = np.array(img)
-        transf = self.transform(image=img)
         return self.transform(image=img)["image"], label
 
     @property
@@ -455,8 +454,6 @@ class KeepChannel(ImageOnlyTransform):
 
 
 def test_augmentations(args):
-    num_workers = 4
-    pin_memory = True
     num_imgs = 36
     transform = A.Compose(
         [
@@ -508,8 +505,6 @@ def test_augmented_dataloader(args):
             ToTensorV2(),
         ]
     )
-
-    use_cuda = torch.cuda.is_available()
     dataset = torchvision.datasets.ImageFolder(args.datadir)
     dataset = AugmentedDataset(dataset, transforms)
     for i in range(10):
@@ -523,7 +518,6 @@ def test_augmented_dataloader(args):
 def test_sampler(args):
     transforms = A.Compose([ToTensorV2()])
 
-    use_cuda = torch.cuda.is_available()
     dataset = torchvision.datasets.ImageFolder(args.datadir)
     dataset = AugmentedDataset(dataset, transforms)
     batch_size = 32
