@@ -52,30 +52,6 @@ import models
 import utils
 
 
-class FocalLoss(nn.Module):
-    def __init__(self, weights, gamma):
-        super(FocalLoss, self).__init__()
-        self.weights = weights
-        self.gamma = gamma
-        self.eps = 1e-10
-
-    def forward(self, predictions, target):
-        probs = F.softmax(predictions, dim=1) + self.eps
-        target_one_hot = utils.one_hot(
-            target,
-            num_classes=predictions.shape[1],
-            device=predictions.device,
-            dtype=predictions.dtype,
-        )
-
-        weight = torch.pow(1.0 - probs, self.gamma)
-        focal = -weight * torch.log(probs)
-        loss_tmp = torch.sum(target_one_hot * focal, dim=1)
-        loss = loss_tmp.mean()
-
-        return loss
-
-
 def stats(args):
     print("Stats")
 
@@ -191,7 +167,7 @@ def train(args):
     if args.loss == "BCE":
         loss = bce_loss
     else:
-        loss = utils.FocalLoss(class_weights, gamma=0.5)
+        loss = utils.FocalLoss(gamma=0.5)
 
     # Make the optimizer
     optimizer = torch.optim.Adam(

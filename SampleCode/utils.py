@@ -20,6 +20,8 @@ from typing import Optional
 import logging
 import torch
 import torch.data
+import torch.nn as nn
+import torch.nn.functional as F
 from sklearn.metrics import f1_score
 import matplotlib.pyplot as plt
 import numpy as np
@@ -168,3 +170,37 @@ def plot_confusion_matrix(confusion_matrix: np.array):
     plt.ylabel("Predicted")
     plt.xlabel("True")
     return fig
+
+
+class FocalLoss(nn.Module):
+    """
+    Implementation of the Focal Loss :math:`\frac{1}{N} \sum_i -(1-p_{y_i} + \epsilon)^\gamma \log(p_{y_i})`
+
+    Args:
+        gamma: :math:`\gamma > 0` puts more focus on hard misclassified samples
+
+    Shape:
+        - predictions :math:`(B, C)` : the logits
+        - target :math`(B, )` : the target ids to predict
+    """
+
+    def __init__(self, gamma):
+        super(FocalLoss, self).__init__()
+        self.gamma = gamma
+        self.eps = 1e-10
+
+    def forward(self, predictions, target):
+        probs = F.softmax(predictions, dim=1) + self.eps
+        target_one_hot = one_hot(
+            target,
+            num_classes=predictions.shape[1],
+            device=predictions.device,
+            dtype=predictions.dtype,
+        )
+
+        weight = torch.pow(1.0 - probs, self.gamma)
+        focal = -weight * torch.log(probs)
+        loss_tmp = torch.sum(target_one_hot * focal, dim=1)
+        loss = loss_tmp.mean()
+
+        return loss
