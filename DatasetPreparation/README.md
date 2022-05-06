@@ -2,7 +2,11 @@
 
 The 3MD4040 challenge dataset is based on the [ZooScan database downloable from seanoe](https://www.seanoe.org/data/00446/55741/). 
 
-The script requires the imagemagick `convert` command.
+The script requires the imagemagick `convert` command and runs as :
+
+```
+python3 prepare_data.py --srcdir ./ZooScanNet --tgtdir ./dataset
+```
 
 For preparing the train/test folds, you simply run the `prepare_data.py` script. By default, the script will : 
 
