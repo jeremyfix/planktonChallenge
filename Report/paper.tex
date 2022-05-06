@@ -134,9 +134,9 @@ The images vary in size. During the prepation of the dataset, the images were re
 
 \begin{figure}
 	\begin{center}
-		% \includegraphics[width=0.3\columnwidth]{figs/size_train.png}
-		% \includegraphics[width=0.3\columnwidth]{figs/sizes_test.pdf}
-		% \includegraphics[width=0.3\columnwidth]{figs/size_orig.png}
+		\includegraphics[width=0.3\columnwidth]{figs/size_train.png}
+		\includegraphics[width=0.3\columnwidth]{figs/sizes_test.pdf}
+		\includegraphics[width=0.3\columnwidth]{figs/size_orig.png}
 	\end{center}
 	\caption{\label{fig:sizes} Distribution of the image sizes for the training set (left), test set(right) and the original dataset (right). On the plot on the right, the original sizes have been limited to $4000$ for both widths and heights but there exists outliers up to $10000$ in width or $12000$ in height.}
 \end{figure}
@@ -342,11 +342,11 @@ The best entries of all the teams ranged from 0.71 to 0.82 (except one outlier a
 
 We can also plot the F1 scores from the class perspective rather than a team perspective. That view of the class F1 scores is shown on figure~\ref{fig:class_f1_scores}, right. This graph plots the distribution of the teams' F1 for every class. From this graph, we see that some classes are consistently well predicted (e.g. the classes $0$, $1$, $2$, $3$, $4$ and $6$) and some classes seem much harder to classify ($80$, $76$, $75$, $70$, $66$). In order to get an idea of the classes that appear to be the easiest to predict, we selected from the distribution of F1 scores, the classes for which the minimal F1 over all the teams is higher than 0.8 This choice leads to the easiest classes given in table~\ref{table:best_predicted}.
 
-\input{table_best_predicted.tex}
+\input{./figs/table_best_predicted.tex}
 
 In order to get an idea of the classes that appear to be the most difficult to predict, we selected from the distribution of F1 scores, the classes for which the maximal F1 over all the teams is smaller than 0.6. This choice leads to the hardest classes given in table~\ref{table:worst_predicted}.
 
-\input{table_worst_predicted.tex}
+\input{./figs/table_worst_predicted.tex}
 
 The last analysis we provide is the construction of the confusion matrices for all the participants. These are given in figures~\ref{fig:confusion}. Note the confusion matrices have been row normalized and the figures should be understood as the fraction of a given class that has been classified as such or such class.
 
