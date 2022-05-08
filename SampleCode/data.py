@@ -24,6 +24,7 @@ import os
 import argparse
 import tqdm
 import random
+from collections import defaultdict
 
 # External imports
 import torchvision
@@ -193,19 +194,39 @@ def load_raw_data(datadir):
     return MyDataset(root=datadir)
 
 
-def load_dataset(datadir, transform, val_ratio):
+def load_dataset(
+    datadir: pathlib.Path, transform: Callable, val_ratio: float, stratified: bool
+):
     dataset = MyDataset(root=datadir, transform=transform)
     logging.info(dataset)
 
-    indices = list(range(len(dataset)))
-    num_data = len(dataset)
-    num_valid = int(val_ratio * num_data)
-    num_train = num_data - num_valid
+    if not stratified:
+        indices = list(range(len(dataset)))
+        num_data = len(dataset)
+        num_valid = int(val_ratio * num_data)
+        num_train = num_data - num_valid
 
-    # TODO: split in valid/train with the same proportions
-    np.random.shuffle(indices)
-    train_indices = indices[:num_train]
-    valid_indices = indices[num_train:]
+        np.random.shuffle(indices)
+        train_indices = indices[:num_train]
+        valid_indices = indices[num_train:]
+    else:
+        # Browse all the dataset for giving the right proportion of samples
+        # per class
+        # As we do not know the number of classes, we use a dictionnary
+        class_indices = defaultdict(list)
+        for i, (_, yi) in enumerate(dataset):
+            class_indices[yi].append(i)
+
+        # Random assign the indices for the train and valid folds
+        train_indices, valid_indices = [], []
+        for ci, idxi in class_indices.items():
+            num_data = len(idxi)
+            num_valid = int(val_ratio * num_data)
+            num_train = num_data - num_valid
+
+            np.random.shuffle(idxi)
+            train_indices.append(indices[:num_train])
+            valid_indices.append(indices[num_train:])
 
     train_dataset = torch.utils.data.Subset(dataset, train_indices)
     valid_dataset = torch.utils.data.Subset(dataset, valid_indices)
