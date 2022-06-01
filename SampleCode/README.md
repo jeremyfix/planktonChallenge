@@ -31,7 +31,7 @@ Before training, we first preprocess the images :
 
 ```
 export PYTHONNOUSERSITE=1
-conda activate plankton
+source activate plankton
 python preprocess.py --datadir dataset --outputdir preprocessed
 ```
 
@@ -57,5 +57,5 @@ sbatch slurm-conda-setup.sbatch
 For preprocessing the dataset :
 
 ```
-
+sbatch slurm-preprocess.sbatch
 ```
