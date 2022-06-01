@@ -214,12 +214,14 @@ def load_dataset(
         # per class
         # As we do not know the number of classes, we use a dictionnary
         class_indices = defaultdict(list)
-        for i, (_, yi) in enumerate(dataset):
+        logging.info("Collecting the samples")
+        for i, (_, yi) in tqdm.tqdm(enumerate(dataset)):
             class_indices[yi].append(i)
 
         # Random assign the indices for the train and valid folds
         train_indices, valid_indices = [], []
-        for ci, idxi in class_indices.items():
+        logging.info("Splitting the samples between the folds")
+        for ci, idxi in tqdm.tqdm(class_indices.items()):
             num_data = len(idxi)
             num_valid = int(val_ratio * num_data)
             num_train = num_data - num_valid
