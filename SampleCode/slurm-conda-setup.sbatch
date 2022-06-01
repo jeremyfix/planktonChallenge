@@ -11,6 +11,9 @@
 export PATH=/opt/conda/bin:$PATH
 
 # Create conda environment 
+# and prevent the use of system site-package
+# that will interfer with the conda env
+export PYTHONNOUSERSITE=1
 conda create --name plankton python=3.9 --force
 source activate plankton
 pip install -r requirements.txt 
