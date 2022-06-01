@@ -44,11 +44,11 @@ import data
 IMAGE_IDX_FILEWIDTH = 6
 
 
-def process_dataset(dataset: torch.data.Dataset, outputdir: pathlib.Path):
+def process_dataset(dataset: torch.utils.data.Dataset, outputdir: pathlib.Path):
     """Loads and apply the transform on every image of a dataset
 
     Args:
-        dataset (torch.data.Dataset) : a mappable dataset
+        dataset (torch.utils.data.Dataset) : a mappable dataset
         outputdir (Pathlib.path) : an output dir to save the data in
     """
     img_idx = {}
@@ -85,6 +85,7 @@ def main(args):
         args.datadir,
         transform=data.Resize(data.__default_size[0]),
         val_ratio=args.val_ratio,
+        stratified=True,
     )
     process_dataset(train_dataset, args.outputdir / "train")
     logging.info("Done")
