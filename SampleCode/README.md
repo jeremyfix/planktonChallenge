@@ -30,6 +30,7 @@ conda deactivate
 Before training, we first preprocess the images :
 
 ```
+export PYTHONNOUSERSITE=1
 conda activate plankton
 python preprocess.py --datadir dataset --outputdir preprocessed
 ```
