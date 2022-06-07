@@ -41,7 +41,7 @@ import torch
 # Local modules
 import data
 
-IMAGE_IDX_FILEWIDTH = 6
+IMAGE_IDX_FILEWIDTH = 7
 
 
 def process_dataset(dataset: torch.utils.data.Dataset, outputdir: pathlib.Path):
