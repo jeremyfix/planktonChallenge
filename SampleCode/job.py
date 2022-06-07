@@ -111,11 +111,11 @@ submit_job(
     makejob(
         commit_id,
         3,
-        "gpu_prod_long",
-        "48:00:00",
+        "gpu_prod_night",
+        "08:00:00",
         True,
         {
-            "model": "cait_s24_224",
+            "model": "efficientnet_b3",
             "batch_size": 32,
             "weight_decay": 0.00,
             "nepochs": 40,
