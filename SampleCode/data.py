@@ -227,8 +227,8 @@ def load_dataset(
             num_train = num_data - num_valid
 
             np.random.shuffle(idxi)
-            train_indices.append(idxi[:num_train])
-            valid_indices.append(idxi[num_train:])
+            train_indices.extend(idxi[:num_train])
+            valid_indices.extend(idxi[num_train:])
 
     train_dataset = torch.utils.data.Subset(dataset, train_indices)
     valid_dataset = torch.utils.data.Subset(dataset, valid_indices)

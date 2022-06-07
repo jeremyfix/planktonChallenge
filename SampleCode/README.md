@@ -41,6 +41,14 @@ data into a training and validation fold, by default 0.95/0.05.
 
 ## Training
 
+To run a training, you run the `main.py` script. To train an efficientNet B3, using mixup for data augmentation :
+
+```
+export PYTHONNOUSERSITE=1
+source activate plankton
+python main.py --datadir dataset --model efficientnet_b3 --mixup train
+```
+
 ## Inference
 
 
