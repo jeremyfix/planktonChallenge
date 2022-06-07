@@ -68,7 +68,7 @@ def process_dataset(dataset: torch.utils.data.Dataset, outputdir: pathlib.Path):
         # If the following assert is not true
         # we need to adapt the f-string format below
         # do not know how to that with a variable
-        assert IMAGE_IDX_FILEWIDTH == 6
+        assert IMAGE_IDX_FILEWIDTH == 7
         output_filepath = output_filedir / f"{img_idx[y]:06d}.jpg"
         img_idx[y] += 1
         X.save(output_filepath)

@@ -2,8 +2,8 @@
 
 #SBATCH --job-name=planktonPreproces
 #SBATCH --nodes=1
-#SBATCH --partition=gpu_inter
-#SBATCH --time=2:00:00
+#SBATCH --partition=gpu_prod_night
+#SBATCH --time=10:00:00
 #SBATCH --output=logslurms/slurm-conda-%j.out
 #SBATCH --error=logslurms/slurm-conda-%j.err
 
