@@ -113,7 +113,7 @@ os.system("mkdir -p logslurms")
 submit_job(
     makejob(
         commit_id,
-        3,
+        1,
         "gpu_prod_night",
         "08:00:00",
         True,
