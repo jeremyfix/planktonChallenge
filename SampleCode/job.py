@@ -61,28 +61,28 @@ cd $TMPDIR/challenge/SampleCode/
 
 ls 
 
-#git checkout {commit_id}
-#
-#echo ""
-#echo "Virtual env"
-#
-#python3 -m pip install virtualenv --user
-#virtualenv -p python3 venv
-#source venv/bin/activate
-#python -m pip install -r requirements.txt
-#
-#
-#
-#echo ""
-#echo "Training"
-#date
-#
-#python3 main.py  --datadir ./ChallengeDeep/training {paramsstr} --logname {params['model']}_${{SLURM_ARRAY_JOB_ID}}_${{SLURM_ARRAY_TASK_ID}} --commit_id '{commit_id}' --logdir ${{current_dir}}/logs train
-#
-#if [[ $? != 0 ]]; then
-#    exit -1
-#fi
-#date
+git checkout {commit_id}
+
+echo ""
+echo "Virtual env"
+
+python3 -m pip install virtualenv --user
+virtualenv -p python3 venv
+source venv/bin/activate
+python -m pip install -r requirements.txt
+
+
+
+echo ""
+echo "Training"
+date
+
+python3 main.py  --datadir ./ChallengeDeep/training {paramsstr} --logname {params['model']}_${{SLURM_ARRAY_JOB_ID}}_${{SLURM_ARRAY_TASK_ID}} --commit_id '{commit_id}' --logdir ${{current_dir}}/logs train
+
+if [[ $? != 0 ]]; then
+    exit -1
+fi
+date
 """
 
 
@@ -113,7 +113,7 @@ os.system("mkdir -p logslurms")
 submit_job(
     makejob(
         commit_id,
-        3,
+        1,
         "gpu_prod_night",
         "08:00:00",
         True,
