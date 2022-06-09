@@ -55,7 +55,7 @@ echo "Copying the source directory and data"
 date
 mkdir $TMPDIR/challenge
 cd ..
-rsync -r .. $TMPDIR/challenge/ --exclude 'SampleCode/logslurms' --exclude 'DatasetPreparation' --exclude 'Report'
+rsync -r . $TMPDIR/challenge/ --exclude 'SampleCode/logslurms' --exclude 'DatasetPreparation' --exclude 'Report'
 
 cd $TMPDIR/challenge/SampleCode/
 
