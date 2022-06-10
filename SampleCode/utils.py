@@ -46,14 +46,14 @@ def accuracy(probabilities: torch.Tensor, targets: torch.Tensor):
 
 
 def f1_metric(
-    model: torch.nn.Module, loader: torch.utils.data.Dataloader, device: torch.device
+    model: torch.nn.Module, loader: torch.utils.data.DataLoader, device: torch.device
 ):
     """Computes the F1 score of a model over datas provided by a dataloader
 
     Args:
         model (nn.Module): The module through which to forward propagate
                            the inputs
-        loader (torch.utils.data.Dataloader): a mappable dataloader
+        loader (torch.utils.data.DataLoader): a mappable dataloader
         device (torch.device): The device on which to compute
 
     Returns:
@@ -123,7 +123,7 @@ def one_hot(
 
 def make_confusion_matrix(
     model: torch.Tensor,
-    loader: torch.utils.data.Dataloader,
+    loader: torch.utils.data.DataLoader,
     device: torch.device,
     num_classes: int,
 ):
@@ -131,7 +131,7 @@ def make_confusion_matrix(
 
     Args:
         model (torch.nn.Module) : the module to evaluate
-        loader (torch.utils.data.Dataloader): the iterable over the data
+        loader (torch.utils.data.DataLoader): the iterable over the data
         device (torch.device): the device on which to compute
         num_classes (int) : the total number of classes
 
