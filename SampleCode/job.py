@@ -114,7 +114,7 @@ submit_job(
     makejob(
         commit_id,
         1,
-        "gpu_prod_night",
+        "gpu_prod_long",
         "08:00:00",
         True,
         {
