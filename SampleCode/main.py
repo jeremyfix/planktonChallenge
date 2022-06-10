@@ -110,7 +110,7 @@ def train(args):
 
     # Set up the train and valid transforms
     train_transforms = [
-        ImageOps.GrayScale,
+        ImageOps.grayscale,
         A.HorizontalFlip(),
         A.VerticalFlip(),
         A.MotionBlur(),
