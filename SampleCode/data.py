@@ -538,6 +538,24 @@ def test_augmented_dataloader(args):
     print(X.shape)
 
 
+def test_preprocessed(args):
+
+    batch_size = 16
+    train_transforms = [A.ToGray(), A.HorizontalFlip()]
+    train_transforms = A.Compose(train_transforms)
+    valid_transforms = [A.ToGray()]
+    valid_transforms = A.Compose(valid_transforms)
+    num_workers = 4
+    train_loader, valid_loader, n_samples_per_class = load_preprocessed_data(
+        args.datadir,
+        train_transforms,
+        valid_transforms,
+        batch_size,
+        num_workers,
+        pin_memory=True,
+    )
+
+
 def test_sampler(args):
     transforms = A.Compose([ToTensorV2()])
 
@@ -608,4 +626,5 @@ if __name__ == "__main__":
 
     # test_augmentations(args)
     # test_augmented_dataloader(args)
-    test_sampler(args)
+    # test_sampler(args)
+    test_preprocessed(args)

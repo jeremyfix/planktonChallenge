@@ -69,7 +69,7 @@ def stats(args):
     # Get the data
     loaders = data.load_preprocessed_data(
         args.datadir,
-        train_transform=transforms.Compose([ImageOps.grayscale, transforms.ToTensor()]),
+        train_transform=A.Compose([A.ToGray(), A.ToTensorV2()]),
         valid_transform=data.__default_preprocessed_transform,
         # val_ratio=args.val_ratio,
         batch_size=args.batch_size,
