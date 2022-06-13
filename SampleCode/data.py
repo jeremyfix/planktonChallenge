@@ -182,9 +182,7 @@ class MixUpDataset(torch.utils.data.Dataset):
 
 
 __default_size = (224, 224)
-__default_preprocessed_transform = transforms.Compose(
-    [ImageOps.grayscale, transforms.ToTensor()]
-)
+__default_preprocessed_transform = A.Compose([A.ToGray(), A.ToTensorV2()])
 __default_transform = transforms.Compose(
     [Resize(__default_size[0]), __default_preprocessed_transform]
 )

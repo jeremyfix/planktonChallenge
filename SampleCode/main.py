@@ -110,7 +110,7 @@ def train(args):
 
     # Set up the train and valid transforms
     train_transforms = [
-        ImageOps.grayscale,
+        A.ToGray(),
         A.HorizontalFlip(),
         A.VerticalFlip(),
         A.MotionBlur(),
@@ -123,10 +123,10 @@ def train(args):
     train_transforms.append(ToTensorV2())
     train_transforms = A.Compose(train_transforms)
 
-    valid_transforms = [ImageOps.grayscale, ToTensorV2()]
+    valid_transforms = [A.ToGray(), ToTensorV2()]
     if args.normalize:
         valid_transforms.append(transforms.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
-    valid_transforms = transforms.Compose(valid_transforms)
+    valid_transforms = A.Compose(valid_transforms)
 
     loaders = data.load_preprocessed_data(
         args.datadir,
