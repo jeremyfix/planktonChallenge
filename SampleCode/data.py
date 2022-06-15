@@ -253,9 +253,11 @@ def load_preprocessed_data(
     valid_dir = datadir / "valid"
 
     if isinstance(train_transform, A.core.composition.Compose):
+        print("Got albumentations augmented dataset")
         train_dataset = torchvision.datasets.ImageFolder(train_dir)
         train_dataset = AugmentedDataset(train_dataset, train_transform)
     else:
+        print("Not albumentations")
         train_dataset = torchvision.datasets.ImageFolder(train_dir, train_transform)
 
     if label_smooth is not None:
@@ -303,7 +305,8 @@ def load_preprocessed_data(
         pin_memory=pin_memory,
     )
 
-    valid_dataset = torchvision.datasets.ImageFolder(valid_dir, valid_transform)
+    valid_dataset = torchvision.datasets.ImageFolder(valid_dir)
+    valid_dataset = AugmentedDataset(valid_dataset, valid_transform)
     valid_loader = torch.utils.data.DataLoader(
         valid_dataset,
         batch_size=batch_size,
@@ -387,6 +390,22 @@ def test_dataset(args):
     img.show()
     # img.write('sample.png')
     img.save("sample.png")
+
+
+def test_transforms(args):
+    train_transform = A.Compose([A.ToGray(always_apply=True), ToTensorV2()])
+    train_dir = args.datadir / "train"
+    train_dataset1 = torchvision.datasets.ImageFolder(
+        train_dir, transform=ImageOps.grayscale
+    )
+    train_dataset2 = AugmentedDataset(train_dataset1, train_transform)
+    data_in, data_out = train_dataset2[0]
+    print(data_in.shape)
+    tf = A.ToGray(always_apply=True)
+    data_in, data_out = train_dataset1[0]
+    print(type(data_in))
+    data_tf = tf(image=np.array(data_in))["image"]
+    print(data_tf.shape)
 
 
 def test_dataloader(args):
@@ -619,10 +638,11 @@ if __name__ == "__main__":
 
     # get_stats(args)
     # test_dataset(args)
+    test_transforms(args)
     # test_dataloader(args)
     # print(len(dataloader))
 
     # test_augmentations(args)
     # test_augmented_dataloader(args)
     # test_sampler(args)
-    test_preprocessed(args)
+    # test_preprocessed(args)

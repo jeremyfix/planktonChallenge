@@ -294,8 +294,9 @@ if __name__ == "__main__":
     # rf = PytorchReceptiveField(model_fn)
     # rf_params = rf.compute(input_shape = img_size + (1, ))
 
-    mname = ["cait_s24_224"]
+    mname = ["cait_s24_224", "efficientnet_b3"]
 
     for n in mname:
-        m = build_model(n, (3, 224, 224), 85)
-        m(torch.zeros(2, 1, 224, 224))
+        m = build_model(n, (224, 224), 85)
+        out = m(torch.zeros(2, 1, 224, 224))
+        print(out.shape)

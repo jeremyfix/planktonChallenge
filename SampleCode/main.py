@@ -110,7 +110,7 @@ def train(args):
 
     # Set up the train and valid transforms
     train_transforms = [
-        A.ToGray(),
+        data.KeepChannel(0, always_apply=True),
         A.HorizontalFlip(),
         A.VerticalFlip(),
         A.MotionBlur(),
@@ -123,9 +123,10 @@ def train(args):
     train_transforms.append(ToTensorV2())
     train_transforms = A.Compose(train_transforms)
 
-    valid_transforms = [A.ToGray(), ToTensorV2()]
+    valid_transforms = [data.KeepChannel(0, always_apply=True)]
     if args.normalize:
-        valid_transforms.append(transforms.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+        valid_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+    valid_transforms.append(ToTensorV2())
     valid_transforms = A.Compose(valid_transforms)
 
     loaders = data.load_preprocessed_data(
@@ -140,6 +141,11 @@ def train(args):
         mixup=args.mixup,
     )
     train_loader, valid_loader, n_samples_per_class = loaders
+
+    train_in, train_out = next(iter(train_loader))
+    print(f"Got size : {train_in.shape}")
+    valid_in, valid_out = next(iter(valid_loader))
+    print(f"Got size : {valid_in.shape}")
 
     num_classes = len(n_samples_per_class["train"])
     logging.info(f"Considering {num_classes} classes")
@@ -179,9 +185,10 @@ def train(args):
         logdir = deepcs.fileutils.generate_unique_logpath(args.logdir, args.model)
     else:
         logdir = args.logdir / args.logname
+    logdir = pathlib.Path(logdir)
 
-    if not os.path.isdir(logdir):
-        os.makedirs(logdir)
+    if not logdir.exists():
+        logdir.mkdir()
     input_size = next(iter(train_loader))[0].shape
     summary_text = (
         f"Logdir : {logdir}\n"
