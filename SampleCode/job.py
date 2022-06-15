@@ -96,7 +96,7 @@ def submit_job(job):
 result = int(
     subprocess.check_output("git status | grep 'modifi' | wc -l", shell=True).decode()
 )
-if result != 1:
+if result > 0:
     print(f"We found {result} modifications not staged or commited")
     raise RuntimeError(
         "You must stage and commit every modification before submission "
