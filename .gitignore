@@ -1,0 +1,7 @@
+**/*.swp
+**/__pycache__
+SampleCode/data
+SampleCode/smalldata
+SampleCode/logs
+SampleCode/logslurms
+SampleCode/job.sbatch
