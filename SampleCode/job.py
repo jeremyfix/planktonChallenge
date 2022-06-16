@@ -115,7 +115,7 @@ submit_job(
         commit_id,
         1,
         "gpu_prod_long",
-        "08:00:00",
+        "48:00:00",
         True,
         {
             "model": "efficientnet_b3",
