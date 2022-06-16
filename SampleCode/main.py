@@ -143,9 +143,7 @@ def train(args):
     train_loader, valid_loader, n_samples_per_class = loaders
 
     train_in, train_out = next(iter(train_loader))
-    print(f"Got size : {train_in.shape}")
     valid_in, valid_out = next(iter(valid_loader))
-    print(f"Got size : {valid_in.shape}")
 
     num_classes = len(n_samples_per_class["train"])
     logging.info(f"Considering {num_classes} classes")
@@ -350,6 +348,7 @@ def test(args):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     license = """
     prepare_data.py  Copyright (C) 2022  Jeremy Fix
     This program comes with ABSOLUTELY NO WARRANTY;
@@ -357,8 +356,6 @@ if __name__ == "__main__":
     under certain conditions;
     """
     logging.info(license)
-
-    logging.basicConfig(level=logging.INFO, format="%(message)s")
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["train", "test", "stats"])
 
