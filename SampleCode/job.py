@@ -107,21 +107,22 @@ commit_id = subprocess.check_output(
 os.system("mkdir -p logslurms")
 
 # Launch the batch jobs
-submit_job(
-    makejob(
-        commit_id,
-        1,
-        "gpu_prod_long",
-        "48:00:00",
-        True,
-        {
-            "model": "efficientnet_b3",
-            "batch_size": 32,
-            "weight_decay": 0.00,
-            "nepochs": 40,
-            "base_lr": 0.0003,
-            "loss": "BCE",
-            "mixup": 0.2,
-        },
+for model in ["resnet152", "efficientnet_b3", "SimpleCNN3", "LinearNet"]:
+    submit_job(
+        makejob(
+            commit_id,
+            1,
+            "gpu_prod_long",
+            "48:00:00",
+            True,
+            {
+                "model": model,
+                "batch_size": 32,
+                "weight_decay": 0.00,
+                "nepochs": 40,
+                "base_lr": 0.0003,
+                "loss": "BCE",
+                "mixup": 0.2,
+            },
+        )
     )
-)
