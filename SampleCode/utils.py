@@ -23,6 +23,9 @@ import torch.utils.data
 import torch.nn as nn
 import torch.nn.functional as F
 from sklearn.metrics import f1_score
+import matplotlib as mpl
+
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import tqdm
@@ -174,10 +177,10 @@ def plot_confusion_matrix(confusion_matrix: np.array):
 
 class FocalLoss(nn.Module):
     """
-    Implementation of the Focal Loss :math:`\frac{1}{N} \sum_i -(1-p_{y_i} + \epsilon)^\gamma \log(p_{y_i})`
+    Implementation of the Focal Loss :math:`\\frac{1}{N} \\sum_i -(1-p_{y_i} + \\epsilon)^\\gamma \\log(p_{y_i})`
 
     Args:
-        gamma: :math:`\gamma > 0` puts more focus on hard misclassified samples
+        gamma: :math:`\\gamma > 0` puts more focus on hard misclassified samples
 
     Shape:
         - predictions :math:`(B, C)` : the logits

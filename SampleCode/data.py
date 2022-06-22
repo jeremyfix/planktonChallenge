@@ -32,6 +32,9 @@ import torchvision.transforms as transforms
 import torch
 from torch.distributions import Beta
 import numpy as np
+import matplotlib as mpl
+
+mpl.use("Agg")
 import matplotlib.pyplot as plt
 from typing import Any, Callable, Optional
 from PIL import ImageOps
