@@ -316,7 +316,7 @@ def test(args):
     all_probs = []
     for (X, _) in tqdm.tqdm(loader):
         X = X.to(device)
-        probs = model(X).detach().to("cpu")
+        probs = nn.functional.softmax(model(X), dim=1).detach().to("cpu")
         all_probs += probs.tolist()
         pred = probs.argmax(axis=1).tolist()
         predictions += pred
