@@ -90,9 +90,7 @@ def submit_job(job):
 
 
 # Ensure all the modified files have been staged and commited
-result = int(
-    subprocess.check_output("git status | grep 'modifi' | wc -l", shell=True).decode()
-)
+result = int(subprocess.check_output("git status -s -uno | wc -l", shell=True).decode())
 if result > 0:
     print(f"We found {result} modifications not staged or commited")
     raise RuntimeError(
