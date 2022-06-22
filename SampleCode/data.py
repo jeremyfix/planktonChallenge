@@ -489,8 +489,8 @@ class AugmentedDataset(torch.utils.data.Dataset):
 
 
 class ScaleBrightness(ImageOnlyTransform):
-    def __init__(self, scale_range):
-        super().__init__()
+    def __init__(self, scale_range, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.scale_range = scale_range
 
     def get_transform_init_args_names(self):
@@ -501,6 +501,15 @@ class ScaleBrightness(ImageOnlyTransform):
             self.scale_range[1] - self.scale_range[0]
         )
         return 255 - np.uint8((255 - img) * f)
+
+
+class ScaleData(ImageOnlyTransform):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def apply(self, img, **params):
+        res = img / 255.0
+        return res
 
 
 class KeepChannel(ImageOnlyTransform):

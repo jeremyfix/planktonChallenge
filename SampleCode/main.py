@@ -115,15 +115,23 @@ def train(args):
         A.CoarseDropout(fill_value=255, max_height=20, max_width=20),
         A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=255),
         data.ScaleBrightness(scale_range=(0.8, 1.0)),
+        data.ScaleData(always_apply=True),
     ]
     if args.normalize:
-        train_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+        train_transforms.append(
+            A.Normalize((IMAGE_MEAN,), (IMAGE_STD,), always_apply=True)
+        )
     train_transforms.append(ToTensorV2())
     train_transforms = A.Compose(train_transforms)
 
-    valid_transforms = [data.KeepChannel(0, always_apply=True)]
+    valid_transforms = [
+        data.KeepChannel(0, always_apply=True),
+        data.ScaleData(always_apply=True),
+    ]
     if args.normalize:
-        valid_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+        valid_transforms.append(
+            A.Normalize((IMAGE_MEAN,), (IMAGE_STD,), always_apply=True)
+        )
     valid_transforms.append(ToTensorV2())
     valid_transforms = A.Compose(valid_transforms)
 
@@ -140,8 +148,8 @@ def train(args):
     )
     train_loader, valid_loader, n_samples_per_class = loaders
 
-    train_in, train_out = next(iter(train_loader))
-    valid_in, valid_out = next(iter(valid_loader))
+    # train_in, train_out = next(iter(train_loader))
+    # valid_in, valid_out = next(iter(valid_loader))
 
     num_classes = len(n_samples_per_class["train"])
     logging.info(f"Considering {num_classes} classes")
@@ -280,6 +288,7 @@ def test(args):
     test_transforms = [
         data.SquareResize(data.__default_size[0], always_apply=True),
         data.KeepChannel(0, always_apply=True),
+        data.ScaleData(always_apply=True),
     ]
     if args.normalize:
         test_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
@@ -293,6 +302,7 @@ def test(args):
         num_workers=args.num_workers,
         pin_memory=use_cuda,
     )
+    # batch, _ = next(iter(loader))
     logging.info(loader.dataset)
 
     # Create the model
