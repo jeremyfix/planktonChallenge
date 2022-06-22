@@ -280,13 +280,13 @@ def test(args):
 
     logging.info("Loading the data")
     test_transforms = [
-        data.Resize(data.__default_size[0]),
-        ImageOps.grayscale,
-        transforms.ToTensor(),
+        data.SquareResize(data.__default_size[0]),
+        data.KeepChannel(0, always_apply=True),
     ]
     if args.normalize:
-        test_transforms.append(transforms.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
-    test_transforms = transforms.Compose(test_transforms)
+        test_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+    test_transforms.append(ToTensorV2())
+    test_transforms = A.Compose(test_transforms)
 
     loader = data.load_test_data(
         args.datadir,

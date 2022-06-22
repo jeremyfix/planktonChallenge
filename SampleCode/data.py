@@ -65,6 +65,28 @@ class Resize:
         return self.__class__.__name__ + f"{self.target_size}"
 
 
+class SquareResize:
+    def __init__(self, target_size: int):
+        self.target_size = target_size
+
+    def __call__(self, image, force_apply):
+        longest_size = max(*image.shape[:2])  # image is (H, W, C)
+        image = image.astype(float)
+        transforms = [
+            A.PadIfNeeded(
+                min_height=longest_size,
+                min_width=longest_size,
+                value=255,
+                always_apply=True,
+            ),
+            A.Resize(
+                height=self.target_size, width=self.target_size, always_apply=True
+            ),
+        ]
+        transform = A.Compose(transforms)
+        return transform(image=image)
+
+
 class MyDataset(torch.utils.data.Dataset):
     """
     Wrapper class around the ImageFolder dataset to add the static features as
@@ -339,11 +361,8 @@ def load_data(datadir, transform, val_ratio, batch_size, num_workers, pin_memory
 
 
 def load_test_data(datadir, transform, batch_size, num_workers, pin_memory):
-    if isinstance(transform, A.core.composition.Compose):
-        test_dataset = torchvision.datasets.ImageFolder(datadir)
-        test_dataset = AugmentedDataset(test_dataset, transform)
-    else:
-        test_dataset = torchvision.datasets.ImageFolder(datadir, transform)
+    test_dataset = torchvision.datasets.ImageFolder(datadir)
+    test_dataset = AugmentedDataset(test_dataset, transform)
     loader = torch.utils.data.DataLoader(
         test_dataset,
         batch_size=batch_size,
