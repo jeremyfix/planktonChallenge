@@ -64,13 +64,10 @@ ls
 git checkout {commit_id}
 
 echo ""
-echo "Virtual env"
+echo "Conda virtual env"
 
-python3 -m pip install virtualenv --user
-virtualenv -p python3 venv
-source venv/bin/activate
-python -m pip install -r requirements.txt
-
+export PATH=/opt/conda/bin:$PATH
+source activate plankton
 
 
 echo ""
