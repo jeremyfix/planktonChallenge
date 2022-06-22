@@ -507,6 +507,9 @@ class ScaleData(ImageOnlyTransform):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def get_transform_init_args_names(self):
+        return []
+
     def apply(self, img, **params):
         res = img / 255.0
         return res
