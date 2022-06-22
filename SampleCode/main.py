@@ -38,10 +38,8 @@ import torch
 import torch.nn as nn
 import torch.optim
 from torch.utils.tensorboard import SummaryWriter
-import torchvision.transforms as transforms
 import pandas as pd
 import cv2
-from PIL import ImageOps
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
 
@@ -364,7 +362,7 @@ if __name__ == "__main__":
     parser.add_argument("--datadir", type=pathlib.Path, required=True)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--batch_size", type=int, default=32)
-    parser.add_argument("--model", choices=models.available_models)
+    parser.add_argument("--model", choices=models.available_models, required=True)
 
     parser.add_argument("--loss", choices=["BCE", "Focal"], default="BCE")
 
