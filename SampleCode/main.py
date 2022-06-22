@@ -278,7 +278,7 @@ def test(args):
 
     logging.info("Loading the data")
     test_transforms = [
-        data.SquareResize(data.__default_size[0]),
+        data.SquareResize(data.__default_size[0], always_apply=True),
         data.KeepChannel(0, always_apply=True),
     ]
     if args.normalize:

@@ -65,13 +65,17 @@ class Resize:
         return self.__class__.__name__ + f"{self.target_size}"
 
 
-class SquareResize:
-    def __init__(self, target_size: int):
+class SquareResize(ImageOnlyTransform):
+    def __init__(self, target_size: int, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.target_size = target_size
 
-    def __call__(self, image, force_apply):
-        longest_size = max(*image.shape[:2])  # image is (H, W, C)
-        image = image.astype(float)
+    def get_transform_init_args_names(self):
+        return ["target_size"]
+
+    def apply(self, img, **params):
+        longest_size = max(*img.shape[:2])  # img is (H, W, C)
+        img = img.astype(np.float32)
         transforms = [
             A.PadIfNeeded(
                 min_height=longest_size,
@@ -84,7 +88,7 @@ class SquareResize:
             ),
         ]
         transform = A.Compose(transforms)
-        return transform(image=image)
+        return transform(image=img)["image"]
 
 
 class MyDataset(torch.utils.data.Dataset):
