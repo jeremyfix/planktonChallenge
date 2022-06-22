@@ -84,7 +84,7 @@ if [[ $? != 0 ]]; then
 fi
 
 echo "Copying the preditions back to the original directory"
-cp ${modelpath}/prediction.csv ${modelpath}/probs.csv $current_dir/{modelpath}/
+cp {modelpath}/prediction.csv {modelpath}/probs.csv $current_dir/{modelpath}/
 
 date
 """
