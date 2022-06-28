@@ -5,3 +5,4 @@ SampleCode/smalldata
 SampleCode/logs
 SampleCode/logslurms
 SampleCode/job.sbatch
+SampleCode/job-infer.sbatch
