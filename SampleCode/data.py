@@ -210,7 +210,7 @@ class MixUpDataset(torch.utils.data.Dataset):
         return self.base_dataset.__repr__()
 
 
-__default_size = (224, 224)
+__default_size = (300, 300)
 __default_preprocessed_transform = A.Compose([A.ToGray(), ToTensorV2()])
 __default_transform = transforms.Compose(
     [Resize(__default_size[0]), __default_preprocessed_transform]
