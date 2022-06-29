@@ -25,10 +25,12 @@ import os
 import subprocess
 
 
-def makejob(commit_id, nruns, partition, walltime, normalize, params):
+def makejob(commit_id, nruns, partition, walltime, normalize, class_weights, params):
     paramsstr = " ".join([f"--{name} {value}" for name, value in params.items()])
     if normalize:
         paramsstr += " --normalize "
+    if class_weights:
+        paramsstr += " --class_weights "
     return f"""#!/bin/bash
 
 #SBATCH --job-name=challenge-{params['model']}
@@ -105,15 +107,16 @@ commit_id = subprocess.check_output(
 os.system("mkdir -p logslurms")
 
 # Launch the batch jobs
-for model in ["resnet18"]:
+for model in ["resnet18", "regnety_016"]:
     submit_job(
         makejob(
             commit_id,
             1,
             "gpu_prod_long",
             "48:00:00",
-            True,
-            {
+            normalize=True,
+            class_weights=True,
+            params={
                 "model": model,
                 "batch_size": 32,
                 "weight_decay": 0.00,
