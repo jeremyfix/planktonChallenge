@@ -356,7 +356,7 @@ def test(args):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, format="%(message)s")
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
     license = """
     prepare_data.py  Copyright (C) 2022  Jeremy Fix
     This program comes with ABSOLUTELY NO WARRANTY;
