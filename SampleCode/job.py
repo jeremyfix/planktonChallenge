@@ -25,12 +25,23 @@ import os
 import subprocess
 
 
-def makejob(commit_id, nruns, partition, walltime, normalize, class_weights, params):
+def makejob(
+    commit_id,
+    nruns,
+    partition,
+    walltime,
+    normalize,
+    class_weights,
+    batch_sampler,
+    params,
+):
     paramsstr = " ".join([f"--{name} {value}" for name, value in params.items()])
     if normalize:
         paramsstr += " --normalize "
     if class_weights:
         paramsstr += " --class_weights "
+    if batch_sampler:
+        paramsstr += " --batch_sampler "
     return f"""#!/bin/bash
 
 #SBATCH --job-name=challenge-{params['model']}
@@ -115,13 +126,14 @@ for model in ["resnet18", "regnety_016"]:
             "gpu_prod_long",
             "48:00:00",
             normalize=True,
-            class_weights=True,
+            class_weights=False,
+            batch_sampler=False,
             params={
                 "model": model,
-                "batch_size": 32,
+                "batch_size": 128,
                 "weight_decay": 0.00,
-                "nepochs": 40,
-                "base_lr": 0.0003,
+                "nepochs": 100,
+                "base_lr": 0.001,
                 "loss": "BCE",
                 "mixup": 0.2,
             },

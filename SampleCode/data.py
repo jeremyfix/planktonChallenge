@@ -271,6 +271,7 @@ def load_preprocessed_data(
     pin_memory,
     label_smooth=None,
     mixup=None,
+    batch_sampler=False,
 ):
     """
     This function loads the data, supposed split in datadir/train datadir/valid
@@ -312,13 +313,17 @@ def load_preprocessed_data(
     class_weights = torch.zeros((len(n_samples_per_class["train"])))
     for cls, num in enumerate(n_samples_per_class["train"]):
         class_weights[cls] = 1.0 / num if num != 0 else 0.0
-    sample_weights = torch.zeros((sum(n_samples_per_class["train"]),))
-    for i, (_, y) in enumerate(iter(train_dataset)):
-        if isinstance(y, int):
-            sample_weights[i] = class_weights[y]
-        else:
-            # in case of label smooth
-            sample_weights[i] = class_weights[y.argmax()]
+    if batch_sampler:
+        sample_weights = torch.zeros((sum(n_samples_per_class["train"]),))
+        for i, (_, y) in enumerate(iter(train_dataset)):
+            if isinstance(y, int):
+                sample_weights[i] = class_weights[y]
+            else:
+                # in case of label smooth
+                sample_weights[i] = class_weights[y.argmax()]
+    else:
+        sample_weights = torch.ones((sum(n_samples_per_class["train"]),))
+
     sampler = torch.utils.data.sampler.WeightedRandomSampler(
         sample_weights, len(sample_weights)
     )

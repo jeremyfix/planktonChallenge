@@ -145,6 +145,7 @@ def train(args):
         pin_memory=use_cuda,
         label_smooth=args.labelsmooth,
         mixup=args.mixup,
+        batch_sampler=args.batch_sampler,
     )
     train_loader, valid_loader, n_samples_per_class = loaders
 
@@ -387,6 +388,7 @@ if __name__ == "__main__":
     parser.add_argument("--nepochs", type=int, default=50)
     parser.add_argument("--base_lr", type=float, default=3e-4)
     parser.add_argument("--weight_decay", type=float, default=1e-2)
+    parser.add_argument("--batch_sampler", action="store_true", default=False)
 
     # Testing parameters
     parser.add_argument("--modelpath", type=pathlib.Path, default=None)
