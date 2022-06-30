@@ -118,7 +118,7 @@ commit_id = subprocess.check_output(
 os.system("mkdir -p logslurms")
 
 # Launch the batch jobs
-for model in ["resnet18", "regnety_016"]:
+for model in ["resnet18"]:
     submit_job(
         makejob(
             commit_id,
@@ -135,7 +135,7 @@ for model in ["resnet18", "regnety_016"]:
                 "nepochs": 100,
                 "base_lr": 0.001,
                 "loss": "BCE",
-                "mixup": 0.2,
+                # "mixup": 0.2,
             },
         )
     )
