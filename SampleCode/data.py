@@ -328,7 +328,7 @@ def load_preprocessed_data(
         sample_weights, len(sample_weights)
     )
 
-    logging.info(f"Using a sampler with class_weights : {class_weights}")
+    logging.info(f"Using a sampler with sample_weights : {sample_weights}")
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -520,6 +520,7 @@ class ScaleData(ImageOnlyTransform):
 
     def apply(self, img, **params):
         res = img / 255.0
+        print(res.dtype)
         return res
 
 

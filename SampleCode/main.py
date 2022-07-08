@@ -67,19 +67,27 @@ def stats(args):
     # Get the data
     loaders = data.load_preprocessed_data(
         args.datadir,
-        train_transform=A.Compose([A.ToGray(), ToTensorV2()]),
-        valid_transform=data.__default_preprocessed_transform,
+        train_transform=A.Compose([A.ToGray(), data.ScaleData(), ToTensorV2()]),
+        valid_transform=A.Compose([A.ToGray(), data.ScaleData(), ToTensorV2()]),
         # val_ratio=args.val_ratio,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
         pin_memory=use_cuda,
     )
     train_loader, valid_loader, n_samples_per_class = loaders
+
+    X, _ = next(iter(train_loader))
+    print(X)
+    print(X.dtype)
+
     mean_pix, std_pix, num_imgs = 0, 0, 0
+    print("go")
     for X, _ in train_loader:
+        print("go 1 ")
         X = X.to(device)
         mean_pix += X.shape[0] * X.mean().item()  # Mean over num_pixels
         num_imgs += X.shape[0]
+        print("go 2 ")
     mean_pix /= num_imgs  # Mean over num_pixels x batch_size
     for X, _ in train_loader:
         X = X.to(device)
@@ -111,8 +119,6 @@ def train(args):
         data.KeepChannel(0, always_apply=True),
         A.HorizontalFlip(),
         A.VerticalFlip(),
-        A.MotionBlur(),
-        A.CoarseDropout(fill_value=255, max_height=20, max_width=20),
         A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=255),
         data.ScaleBrightness(scale_range=(0.8, 1.0)),
         data.ScaleData(always_apply=True),
