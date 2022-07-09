@@ -282,13 +282,8 @@ def load_preprocessed_data(
     train_dir = datadir / "train"
     valid_dir = datadir / "valid"
 
-    if isinstance(train_transform, A.core.composition.Compose):
-        print("Got albumentations augmented dataset")
-        train_dataset = torchvision.datasets.ImageFolder(train_dir)
-        train_dataset = AugmentedDataset(train_dataset, train_transform)
-    else:
-        print("Not albumentations")
-        train_dataset = torchvision.datasets.ImageFolder(train_dir, train_transform)
+    train_dataset = torchvision.datasets.ImageFolder(train_dir)
+    train_dataset = AugmentedDataset(train_dataset, train_transform)
 
     if label_smooth is not None:
         train_dataset = LabelSmoothedDataset(
@@ -475,7 +470,8 @@ class AugmentedDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img, label = self.dataset[idx]
         img = np.array(img)
-        return self.transform(image=img)["image"], label
+        img = self.transform(image=img)["image"]
+        return img, label
 
     @property
     def samples(self):
@@ -520,7 +516,6 @@ class ScaleData(ImageOnlyTransform):
 
     def apply(self, img, **params):
         res = img / 255.0
-        print(res.dtype)
         return res
 
 

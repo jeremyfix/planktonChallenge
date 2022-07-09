@@ -67,8 +67,20 @@ def stats(args):
     # Get the data
     loaders = data.load_preprocessed_data(
         args.datadir,
-        train_transform=A.Compose([A.ToGray(), data.ScaleData(), ToTensorV2()]),
-        valid_transform=A.Compose([A.ToGray(), data.ScaleData(), ToTensorV2()]),
+        train_transform=A.Compose(
+            [
+                data.KeepChannel(0, always_apply=True),
+                data.ScaleData(always_apply=True),
+                ToTensorV2(),
+            ]
+        ),
+        valid_transform=A.Compose(
+            [
+                data.KeepChannel(0, always_apply=True),
+                data.ScaleData(always_apply=True),
+                ToTensorV2(),
+            ]
+        ),
         # val_ratio=args.val_ratio,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
@@ -76,20 +88,13 @@ def stats(args):
     )
     train_loader, valid_loader, n_samples_per_class = loaders
 
-    X, _ = next(iter(train_loader))
-    print(X)
-    print(X.dtype)
-
     mean_pix, std_pix, num_imgs = 0, 0, 0
-    print("go")
-    for X, _ in train_loader:
-        print("go 1 ")
+    for X, _ in tqdm.tqdm(train_loader):
         X = X.to(device)
         mean_pix += X.shape[0] * X.mean().item()  # Mean over num_pixels
         num_imgs += X.shape[0]
-        print("go 2 ")
     mean_pix /= num_imgs  # Mean over num_pixels x batch_size
-    for X, _ in train_loader:
+    for X, _ in tqdm.tqdm(train_loader):
         X = X.to(device)
         std_pix += (
             X.shape[0] * ((X - mean_pix) ** 2).mean().item()
