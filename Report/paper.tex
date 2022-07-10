@@ -227,33 +227,32 @@ That overview is built from inspection of the submitted codes and may not reflec
 			Metz Dream Deep & 
 			Resize($224$), Normalize($0.5$, $0.5$) & 
 				Rotate($0, 360$), HFlip($0.5$), Translate($0.2$), Normalization$(0.5, 0.5$)&
-			None&
+			None& Custom CNNs, resnet34, VGG16, VGG19, regnet\_y\_32gf
 			&
-				Cross entropy loss, Adam($1e-4$), Weight decay $1e-4$, ..., batch size $128$, train/valid split&
+				Cross entropy loss, Adam($1e-4$), Weight decay $1e-4$, ..., batch size $128$, train/valid split (0.95, 0.05)&
 			batch sampler $f_k=1/count_k$\\
 			\hline
 			The Backpropagated StuBBorns & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
+				SquarePad(), Resize($224$), Normalize($0.485$, $0.229$) & torchvision AutoAugment &None
+			& pretrained timm efficientnetv2\_rw\_s, tf\_efficientnet\_b8\_ap, deit\_tiny, cait\_s24\_224, coat\_mini, swin transformers, tnt\_s\_patch16\_224, dm\_nfnet, resnet50 followed by 2 linear/dropout/relu layers
+				& Cross Entropy Loss, Adam($1e-4$), early stopping on the validation loss, batch size $32$, train/valid split ($0.8, 0.2$) 
 			&
-			&
-			&
-			&
-			\\
+			batch sampler $f_k=1/count_k$\\
 			\hline
 			JMBmc & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+				Resize($224$), 3 chans ImageNet Normalize & RandomRotate($30$), HFlip($0.5$), VFlip($0.5$)
+			& None
+				& pretrained timm tf\_efficient\_b4, pretrained torchvision, possibly frozen, feature extraction with resnet50, wideResnet50, mobilenet\_v2 followed by $5$ linear/dropout layers\footnote{unfortunately, in their implementation, the participants forgot to add non linearities between the layers, the classification stage is therefore only linear although composed of a stack of layers}
+				& Cross entropy loss, SGD($0.03$) with momentum, StepLR scheduler, batch size $64$, train/valid split ($0.8, 0.2$), early stopping on the validation loss
+			&None
 			\\
 			\hline
 			AG0D & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+				Resize($224$), 3 chans Imagenet Normalize & RandomRotate, RandomAffine, HFlip($0.5)$, VFlip($0.5$), 
+			& RandomRotate, RandomAffine, HFlip($0.5)$, VFlip($0.5$), 
+				& Custom CNNs, pretrained torchvision Resnet18, Resnet50, EfficientNetB7 ... with a random classification head\footnote{unfortunately, as JMBmc, the classifier is a stack of linear layers without non linearities}
+				& weighted cross entropy loss, Adam($0.001$), Reduce LR on plateau, batch size $64$, early stopping on the validation F1, train/valid split ($0.88, 0.12$), per class
+				& class weights in the CE loss $w_k=\log(\sum_i count_i/count_k) > 0$
 			\\
 			\hline
 		\end{tabular}
@@ -265,11 +264,14 @@ That overview is built from inspection of the submitted codes and may not reflec
 			Participant & Data preprocessing & Train augmentation & Test augmentation & Model architectures & Optimizer and scheduler & Class imbalance \\
 			\hline
 			ResMetz & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
+			SquarePad, Resize($224$), 3 chans ImageNet Normalize & 
+				HFlip($0.3$), VFlip($0.3$), RandomRotate
+			& None
+			& torchvision pretrained Resnet18, Resnet50, EfficientNet with a random classification head
+				& weighted cross entropy loss, Adam($3e-4$), early stopping the validation F1, train/valid split ($0.8, 0.2$)
 			&
-			&
-			&
-			&
+			class weights in the CE loss $w_k=\sqrt(\sum_i count_i/count_k)$, batch sampler with the same weight as the class weights
+
 			\\
 			\hline
 			CelestineFeuillat & 

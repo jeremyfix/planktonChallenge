@@ -122,11 +122,11 @@ def train(args):
     # Set up the train and valid transforms
     train_transforms = [
         data.KeepChannel(0, always_apply=True),
+        data.ScaleData(always_apply=True),
         A.HorizontalFlip(),
         A.VerticalFlip(),
-        A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=255),
+        A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=1.0),
         data.ScaleBrightness(scale_range=(0.8, 1.0)),
-        data.ScaleData(always_apply=True),
     ]
     if args.normalize:
         train_transforms.append(
