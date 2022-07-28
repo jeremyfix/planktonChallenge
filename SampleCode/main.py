@@ -130,7 +130,9 @@ def train(args):
     ]
     if args.normalize:
         train_transforms.append(
-            A.Normalize((IMAGE_MEAN,), (IMAGE_STD,), always_apply=True)
+            A.Normalize(
+                (IMAGE_MEAN,), (IMAGE_STD,), max_pixel_value=1.0, always_apply=True
+            )
         )
     train_transforms.append(ToTensorV2())
     train_transforms = A.Compose(train_transforms)
@@ -141,7 +143,9 @@ def train(args):
     ]
     if args.normalize:
         valid_transforms.append(
-            A.Normalize((IMAGE_MEAN,), (IMAGE_STD,), always_apply=True)
+            A.Normalize(
+                (IMAGE_MEAN,), (IMAGE_STD,), max_pixel_value=1.0, always_apply=True
+            )
         )
     valid_transforms.append(ToTensorV2())
     valid_transforms = A.Compose(valid_transforms)
@@ -303,7 +307,11 @@ def test(args):
         data.ScaleData(always_apply=True),
     ]
     if args.normalize:
-        test_transforms.append(A.Normalize((IMAGE_MEAN,), (IMAGE_STD,)))
+        test_transforms.append(
+            A.Normalize(
+                (IMAGE_MEAN,), (IMAGE_STD,), max_pixel_value=1.0, always_apply=True
+            )
+        )
     test_transforms.append(ToTensorV2())
     test_transforms = A.Compose(test_transforms)
 
