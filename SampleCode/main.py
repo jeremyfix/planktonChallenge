@@ -125,6 +125,8 @@ def train(args):
         data.ScaleData(always_apply=True),
         A.HorizontalFlip(),
         A.VerticalFlip(),
+        A.MotionBlur(),
+        A.CoarseDropout(fill_value=1.0, max_height=20, max_width=20),
         A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=1.0),
         data.ScaleBrightness(scale_range=(0.8, 1.0)),
     ]
