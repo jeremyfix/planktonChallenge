@@ -51,6 +51,7 @@ def makejob(
 #SBATCH --output=logslurms/slurm-%A_%a.out
 #SBATCH --error=logslurms/slurm-%A_%a.err
 #SBATCH --array=0-{nruns-1}
+#SBATCH --exclude=sh[00,10-16]
 
 current_dir=`pwd`
 
@@ -127,7 +128,7 @@ for model in ["regnety_016"]:
             "48:00:00",
             normalize=True,
             class_weights=False,
-            batch_sampler=False,
+            batch_sampler=True,
             params={
                 "model": model,
                 "batch_size": 128,
