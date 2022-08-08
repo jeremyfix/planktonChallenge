@@ -186,16 +186,6 @@ class MixUpDataset(torch.utils.data.Dataset):
         return self.base_dataset.__repr__()
 
 
-__default_size = (300, 300)
-__default_transform = A.Compose(
-    [
-        SquareResize(__default_size[0], always_apply=True),
-        KeepChannel(0, always_apply=True),
-        ScaleData(always_apply=True),
-    ]
-)
-
-
 def load_raw_data(datadir):
     return MyDataset(root=datadir)
 
@@ -639,6 +629,16 @@ def test_sampler(args):
     print(f"I sampled a total of {n_samples_drawn.sum().item()} samples")
     n_samples_drawn /= n_samples_drawn.sum()
     print(f"where the class probabilities are {n_samples_drawn}")
+
+
+__default_size = (300, 300)
+__default_transform = A.Compose(
+    [
+        SquareResize(__default_size[0], always_apply=True),
+        KeepChannel(0, always_apply=True),
+        ScaleData(always_apply=True),
+    ]
+)
 
 
 if __name__ == "__main__":
