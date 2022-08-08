@@ -382,6 +382,9 @@ if __name__ == "__main__":
     under certain conditions;
     """
     logging.info(license)
+
+    utils.seed_everything()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["train", "test", "stats"])
 

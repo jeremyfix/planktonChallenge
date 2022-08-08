@@ -632,9 +632,11 @@ def test_sampler(args):
 
 
 __default_size = (300, 300)
+__default_preprocess_transform = SquareResize(__default_size[0], always_apply=True)
+
 __default_transform = A.Compose(
     [
-        SquareResize(__default_size[0], always_apply=True),
+        __default_preprocess_transform,
         KeepChannel(0, always_apply=True),
         ScaleData(always_apply=True),
     ]

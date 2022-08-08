@@ -42,6 +42,7 @@ from albumentations.pytorch import ToTensorV2
 
 # Local modules
 import data
+import utils
 
 IMAGE_IDX_FILEWIDTH = 7
 
@@ -85,12 +86,7 @@ def main(args):
     logging.info("Loading the images")
     train_dataset, valid_dataset = data.load_dataset(
         args.datadir,
-        transform=A.Compose(
-            [
-                data.__default_transform,
-                ToTensorV2(),
-            ]
-        ),
+        transform=data.__default_preprocess_transform,
         val_ratio=args.val_ratio,
         stratified=True,
     )
@@ -102,6 +98,9 @@ def main(args):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+
+    utils.seed_everything()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--datadir", type=pathlib.Path, required=True)
     parser.add_argument("--outputdir", type=pathlib.Path, required=True)

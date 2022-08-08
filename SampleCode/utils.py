@@ -16,8 +16,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
+
+# Standard imports
 from typing import Optional
+import random
 import logging
+import os
+
+# External imports
 import torch
 import torch.utils.data
 import torch.nn as nn
@@ -207,3 +213,18 @@ class FocalLoss(nn.Module):
         loss = loss_tmp.mean()
 
         return loss
+
+
+def seed_everything(seed=42):
+    """Set the seed on pipeline, so the results are the same at every time we run it
+    This function is for the reproducibility
+    """
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True)
+    # Set a fixed value for the hash seed
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    print(" > Seeding done ")
