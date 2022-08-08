@@ -37,8 +37,7 @@ import os
 # External modules
 import tqdm
 import torch
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
+import cv2
 
 # Local modules
 import data
@@ -74,7 +73,7 @@ def process_dataset(dataset: torch.utils.data.Dataset, outputdir: pathlib.Path):
         assert IMAGE_IDX_FILEWIDTH == 7
         output_filepath = output_filedir / f"{img_idx[y]:06d}.jpg"
         img_idx[y] += 1
-        X.save(output_filepath)
+        cv2.imwrite(output_filepath, X)
 
 
 def main(args):
