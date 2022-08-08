@@ -28,7 +28,6 @@ from collections import defaultdict
 
 # External imports
 import torchvision
-import torchvision.transforms as transforms
 import torch
 from torch.distributions import Beta
 import numpy as np
@@ -45,27 +44,6 @@ from albumentations.pytorch import ToTensorV2
 
 __TRAIN_URL = "http://infomob.metz.supelec.fr/fix/ChallengeDeep/train.tar.gz"
 __TEST_URL = "http://infomob.metz.supelec.fr/fix/ChallengeDeep/test.tar.gz"
-
-
-class Resize:
-    """
-    Resize the image to a square image of target_size x target_size
-    preserving the aspect ratio
-    """
-
-    def __init__(self, target_size: int):
-        self.target_size = target_size
-
-    def __call__(self, pic):
-        max_size = max(pic.width, pic.height)
-        pic = ImageOps.grayscale(pic)
-        # The image is centered with the padding
-        pic = ImageOps.pad(pic, (max_size, max_size), color=(255,))
-        pic = ImageOps.fit(pic, (self.target_size, self.target_size))
-        return pic
-
-    def __repr__(self):
-        return self.__class__.__name__ + f"{self.target_size}"
 
 
 class SquareResize(ImageOnlyTransform):
@@ -104,16 +82,14 @@ class MyDataset(torch.utils.data.Dataset):
         self,
         root: str,
         transform: Optional[Callable] = None,
-        target_transform: Optional[Callable] = None,
     ) -> None:
         root_path = pathlib.Path(root)
         if not root_path.exists():
             # TODO: download the data
             # and extract the archive
             print(f"Path {root_path} does not exist")
-        self.imgdataset = torchvision.datasets.ImageFolder(
-            root, transform, target_transform
-        )
+        imgdataset = torchvision.datasets.ImageFolder(root)
+        self.imgdataset = AugmentedDataset(imgdataset, transform)
 
     def __getitem__(self, index: int) -> Any:
         return self.imgdataset[index]
@@ -211,9 +187,12 @@ class MixUpDataset(torch.utils.data.Dataset):
 
 
 __default_size = (300, 300)
-__default_preprocessed_transform = A.Compose([A.ToGray(), ToTensorV2()])
-__default_transform = transforms.Compose(
-    [Resize(__default_size[0]), __default_preprocessed_transform]
+__default_transform = A.Compose(
+    [
+        SquareResize(__default_size[0], always_apply=True),
+        KeepChannel(0, always_apply=True),
+        ScaleData(always_apply=True),
+    ]
 )
 
 

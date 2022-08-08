@@ -37,6 +37,8 @@ import os
 # External modules
 import tqdm
 import torch
+import albumentations as A
+from albumentations.pytorch import ToTensorV2
 
 # Local modules
 import data
@@ -83,7 +85,12 @@ def main(args):
     logging.info("Loading the images")
     train_dataset, valid_dataset = data.load_dataset(
         args.datadir,
-        transform=data.Resize(data.__default_size[0]),
+        transform=A.Compose(
+            [
+                data.__default_transform,
+                ToTensorV2(),
+            ]
+        ),
         val_ratio=args.val_ratio,
         stratified=True,
     )

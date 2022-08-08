@@ -121,8 +121,7 @@ def train(args):
 
     # Set up the train and valid transforms
     train_transforms = [
-        data.KeepChannel(0, always_apply=True),
-        data.ScaleData(always_apply=True),
+        data.__default_transform,
         A.HorizontalFlip(),
         A.VerticalFlip(),
         A.MotionBlur(),
@@ -303,11 +302,8 @@ def test(args):
     device = torch.device("cuda") if use_cuda else torch.device("cpu")
 
     logging.info("Loading the data")
-    test_transforms = [
-        data.SquareResize(data.__default_size[0], always_apply=True),
-        data.KeepChannel(0, always_apply=True),
-        data.ScaleData(always_apply=True),
-    ]
+
+    test_transforms = data.__default_transform
     if args.normalize:
         test_transforms.append(
             A.Normalize(
