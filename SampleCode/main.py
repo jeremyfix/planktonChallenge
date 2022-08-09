@@ -383,6 +383,8 @@ if __name__ == "__main__":
     """
     logging.info(license)
 
+    parser = argparse.ArgumentParser()
+
     parser.add_argument("command", choices=["train", "test", "stats"])
 
     parser.add_argument("--seed", type=int, default=42)
@@ -413,8 +415,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    logging.info(f"Seeding the code with the seed {args.seed}")
     utils.seed_everything(args.seed)
-
-    parser = argparse.ArgumentParser()
 
     exec(f"{args.command}(args)")

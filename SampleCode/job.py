@@ -126,7 +126,7 @@ for model in ["regnety_016"]:
     submit_job(
         makejob(
             commit_id,
-            2,
+            1,
             "gpu_prod_long",
             "48:00:00",
             normalize=True,
