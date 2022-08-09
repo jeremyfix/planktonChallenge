@@ -215,7 +215,7 @@ class FocalLoss(nn.Module):
         return loss
 
 
-def seed_everything(seed=42):
+def seed_everything(seed):
     """Set the seed on pipeline, so the results are the same at every time we run it
     This function is for the reproducibility
     """
