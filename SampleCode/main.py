@@ -376,7 +376,7 @@ def test(args):
 if __name__ == "__main__":
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(message)s")
     license = """
-    prepare_data.py  Copyright (C) 2022  Jeremy Fix
+    main.py  Copyright (C) 2022  Jeremy Fix
     This program comes with ABSOLUTELY NO WARRANTY;
     This is free software, and you are welcome to redistribute it
     under certain conditions;
