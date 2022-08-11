@@ -385,6 +385,32 @@ Looking at the misclassification, it reveals that some of them would have been h
 
 %TODO : check why the off diagonal elements class do not match the badly classified classes listed above. There seems to be issues for class 11 for example ..
 
+\section{Sample submission}
+
+We provide a sample submission on the repository \url{https://github.com/jeremyfix/planktonChallenge}. This sample submission provides single models with reasonnable performances. Model averaging is not performed at the time of writting. 
+
+\paragraph{Preprocessing}: Every image is square padded (with white color) and resized to $300 \times 300$, values are divided by $255$ and then normalized with mean $\mu=0.92$ and variance $0.16$.
+
+The training data are split in a training fold and a validation fold of $0.9/0.1$. The split is stratified meaning every class has $90\%$ of its samples in the training set and the remaining $10\%$ in the validation set. The sample code preprocesses and splits the data once for all making later simulations faster.
+
+\paragraph{Train augmentation}: the samples can be horizontally or vertically flipped, rotated (missing pixels are filled with white). CoarseDropout is also used to mask randomly parts of the image. Finally, as the images appeared to be sometimes blury, motion blur is added.
+
+%TODO : Add augmented samples
+
+There is no test time augmentation.
+
+\paragraph{Model architectures}: several models can be trained: from basic and custom linear and convolutional architectures to architectures provided by the Timm package (resnet18, resnet50, resnet152, efficientnet\_b3, efficientnet\_b3a, regnety\_016). All the models from Timm are initialized with weights pretrained on ImageNet. The first convolution and the last fully connected layers are randomly initialized to match the dimensions of the problem (one input channel, 86 output classes).
+
+
+\paragraph{Optimizer and scheduler}: The training loss is a cross entropy loss. The optimizer is Adam, with an initial learning rate of $0.0003$, a minibatch size of $128$ or $64$ (depending on the model size). The models are trained for $100$ epochs (although actually training time was limited to $48$ hours and large models do not perform more than $43$ epochs and smaller models such as resnet18 perform $100$ epochs in $35$ hours). 
+
+Mixup regularization was also introduced. In mixup, every sample $(x, y)$ is built from two samples $(x_1, y_1)$ and $(x_2,y_2)$ where $x = \lambda x_1 + (1-\lambda)x_2$ and $y = \lambda y_1 + (1-\lambda y_2$ with $y_1, y_2$ the one-hot encoding of the classes and $\lambda$ sampled from a $\beta(0.2, 0.2)$ distribution.
+
+\paragraph{Class imbalance}: every minibatch is built by sampling the samples of the training folds with a weight equals to the inverse of the number of samples of the same class.
+
+
+
+
 
 %-----------------------------------------------------------------------------------
 \clearpage
