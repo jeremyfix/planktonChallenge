@@ -77,7 +77,8 @@ echo ""
 echo "Testing"
 date
 
-python3 main.py  --datadir {datadir} {paramsstr} test
+export CUBLAS_WORKSPACE_CONFIG=:4096:8
+python main.py  --datadir {datadir} {paramsstr} test
 
 if [[ $? != 0 ]]; then
     exit -1
