@@ -305,13 +305,15 @@ def test(args):
 
     test_transforms = data.__default_transform
     if args.normalize:
-        test_transforms.append(
-            A.Normalize(
-                (IMAGE_MEAN,), (IMAGE_STD,), max_pixel_value=1.0, always_apply=True
-            )
+        test_transforms = A.Compose(
+            [
+                test_transforms,
+                A.Normalize(
+                    (IMAGE_MEAN,), (IMAGE_STD,), max_pixel_value=1.0, always_apply=True
+                ),
+            ]
         )
-    test_transforms.append(ToTensorV2())
-    test_transforms = A.Compose(test_transforms)
+    test_transforms = A.Compose([test_transforms, ToTensorV2()])
 
     loader = data.load_test_data(
         args.datadir,
