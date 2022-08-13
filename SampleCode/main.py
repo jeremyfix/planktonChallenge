@@ -389,7 +389,7 @@ if __name__ == "__main__":
 
     parser.add_argument("command", choices=["train", "test", "stats"])
 
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--logdir", type=pathlib.Path, default="./logs")
     parser.add_argument("--commit_id", type=str, default=None)
     parser.add_argument("--datadir", type=pathlib.Path, required=True)
@@ -417,7 +417,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    logging.info(f"Seeding the code with the seed {args.seed}")
-    utils.seed_everything(args.seed)
+    if args.seed is not None:
+        logging.info(f"Seeding the code with the seed {args.seed}")
+        utils.seed_everything(args.seed)
 
     exec(f"{args.command}(args)")

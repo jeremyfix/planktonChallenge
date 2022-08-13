@@ -98,16 +98,18 @@ def main(args):
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
 
-    utils.seed_everything()
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--datadir", type=pathlib.Path, required=True)
     parser.add_argument("--outputdir", type=pathlib.Path, required=True)
     parser.add_argument("--num_workers", type=int, default=4)
     parser.add_argument("--batch_size", type=int, default=64)
     parser.add_argument("--val_ratio", type=float, default=0.05)
+    parser.add_argument("--seed", type=int, default=None)
 
     args = parser.parse_args()
+
+    if args.seed is not None:
+        utils.seed_everything(args.seed)
     if args.outputdir.exists():
         logging.info("The datadir exists, nothing to be done")
     else:

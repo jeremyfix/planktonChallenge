@@ -12,6 +12,7 @@ OUTPUT_DIR=./data
 NUM_WORKERS=7
 BATCH_SIZE=128
 VAL_RATIO=0.1
+SEED=42
 
 # Load the conda module
 echo "Running on $(hostname)"
@@ -24,7 +25,7 @@ source activate plankton
 echo "Starting the preprocessing"
 date
 
-python preprocess.py --datadir $PATH_TO_DATASET --outputdir $OUTPUT_DIR --num_workers $NUM_WORKERS --batch_size $BATCH_SIZE --val_ratio $VAL_RATIO
+python preprocess.py --datadir $PATH_TO_DATASET --outputdir $OUTPUT_DIR --num_workers $NUM_WORKERS --batch_size $BATCH_SIZE --val_ratio $VAL_RATIO --seed $SEED
 
 echo "Preprocessing completed"
 date

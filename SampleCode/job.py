@@ -140,6 +140,7 @@ for model in ["resnet18", "regnety_016", "resnet152", "efficientnet_b3"]:
                 "base_lr": 0.0003,
                 "loss": "BCE",
                 "mixup": 0.2,
+                "seed": 42,
             },
         )
     )
