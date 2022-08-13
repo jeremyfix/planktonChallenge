@@ -124,7 +124,7 @@ def train(args):
         data.__default_transform,
         A.HorizontalFlip(),
         A.VerticalFlip(),
-        A.MotionBlur(),
+        # A.MotionBlur(),
         A.CoarseDropout(fill_value=1.0, max_height=20, max_width=20),
         A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=1.0),
         data.ScaleBrightness(scale_range=(0.8, 1.0), max_pixel_value=1.0),
