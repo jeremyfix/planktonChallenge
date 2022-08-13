@@ -56,13 +56,19 @@ class SquareResize(ImageOnlyTransform):
 
     def apply(self, img, **params):
         longest_size = max(*img.shape[:2])  # img is (H, W, C)
-        img = img.astype(np.float32)
+
+        # Super important
+        # PadIfNeeded value must be 3 channels
+        # torchvsiion ImageFolder loads grayscale images as 3 channels
+        # PadIfNeeded calls internally copyMakeBorder from cv2
+        # If you give value = 255 to copyMakeBorder, it will pad in blue
+        # not with the same value for the 3 channels which I find weird.
         transforms = [
             A.PadIfNeeded(
                 min_height=longest_size,
                 min_width=longest_size,
                 border_mode=cv2.BORDER_CONSTANT,
-                value=255,
+                value=(255, 255, 255),
                 always_apply=True,
             ),
             A.Resize(
@@ -70,7 +76,8 @@ class SquareResize(ImageOnlyTransform):
             ),
         ]
         transform = A.Compose(transforms)
-        return transform(image=img)["image"]
+        transformed_image = transform(image=img)["image"]
+        return transformed_image
 
 
 class MyDataset(torch.utils.data.Dataset):
