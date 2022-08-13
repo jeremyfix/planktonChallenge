@@ -61,6 +61,7 @@ class SquareResize(ImageOnlyTransform):
             A.PadIfNeeded(
                 min_height=longest_size,
                 min_width=longest_size,
+                border_mode=cv2.BORDER_CONSTANT,
                 value=255,
                 always_apply=True,
             ),
@@ -474,7 +475,9 @@ class ScaleBrightness(ImageOnlyTransform):
         f = self.scale_range[0] + np.random.random() * (
             self.scale_range[1] - self.scale_range[0]
         )
-        return self.max_pixel_value - np.uint8((self.max_pixel_value - img) * f)
+        return (self.max_pixel_value - (self.max_pixel_value - img) * f).astype(
+            img.dtype
+        )
 
 
 class ScaleData(ImageOnlyTransform):
@@ -503,16 +506,15 @@ class KeepChannel(ImageOnlyTransform):
 
 
 def test_augmentations(args):
-    num_img = 36
     transform = A.Compose(
         [
             __default_transform,
             A.HorizontalFlip(),
             A.VerticalFlip(),
-            A.MotionBlur(),
+            # A.MotionBlur(),
             A.CoarseDropout(fill_value=1.0, max_height=20, max_width=20),
             A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=1.0),
-            ScaleBrightness(scale_range=(0.8, 1.0)),
+            ScaleBrightness(scale_range=(0.8, 1.0), max_pixel_value=1.0),
             # A.Normalize((0.92,), (0.16,)),
             # ToTensorV2(),
         ]
@@ -521,12 +523,17 @@ def test_augmentations(args):
 
     fig = plt.figure()
     for i in range(6):
-        img, _ = dataset[num_img]
-        print(img.min(), img.max())
-        ax = fig.add_subplot(6, 6, i + 1)
-        ax.imshow(img, cmap="gray")
+        img, _ = dataset.imgdataset.dataset[i]
+        ax = fig.add_subplot(6, 6, 6 * i + 1)
+        ax.imshow(img, cmap="gray", clim=[0, 1])
         ax.axis("off")
-    plt.show()
+        for j in range(5):
+            img, _ = dataset[i]
+            ax = fig.add_subplot(6, 6, 6 * i + j + 2)
+            ax.imshow(img, cmap="gray", clim=[0, 1])
+            ax.axis("off")
+    plt.savefig("augmented_images.pdf", bbox_inches="tight")
+    # plt.show()
 
 
 def test_augmented_dataloader(args):
