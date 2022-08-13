@@ -503,37 +503,28 @@ class KeepChannel(ImageOnlyTransform):
 
 
 def test_augmentations(args):
-    num_imgs = 36
+    num_img = 36
     transform = A.Compose(
         [
+            __default_transform,
             A.HorizontalFlip(),
             A.VerticalFlip(),
             A.MotionBlur(),
-            A.CoarseDropout(fill_value=(255, 255, 255), max_height=20, max_width=20),
-            A.Rotate(
-                180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=(255, 255, 255)
-            ),
+            A.CoarseDropout(fill_value=1.0, max_height=20, max_width=20),
+            A.Rotate(180, p=0.5, border_mode=cv2.BORDER_CONSTANT, value=1.0),
             ScaleBrightness(scale_range=(0.8, 1.0)),
-            KeepChannel(0, always_apply=True),
-            A.Normalize((0.92,), (0.16,)),
-            ToTensorV2(),
+            # A.Normalize((0.92,), (0.16,)),
+            # ToTensorV2(),
         ]
     )
-    print(type(transform))
-    print(isinstance(transform, A.core.composition.Compose))
-    images = []
-    fnames = os.scandir(args.datadir)
-    for img in fnames:
-        imgpath = os.path.join(args.datadir, img.name)
-        img = cv2.imread(imgpath)
-        images.append(transform(image=img)["image"])
-        if len(images) == num_imgs:
-            break
+    dataset = MyDataset(root=args.datadir, transform=transform)
 
     fig = plt.figure()
-    for i, img in enumerate(images):
+    for i in range(6):
+        img, _ = dataset[num_img]
+        print(img.min(), img.max())
         ax = fig.add_subplot(6, 6, i + 1)
-        ax.imshow(img[0], cmap="gray")
+        ax.imshow(img, cmap="gray")
         ax.axis("off")
     plt.show()
 
@@ -650,7 +641,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--datadir", type=pathlib.Path, default="/opt/Datasets/ZooScanSet/imgs"
+        "--datadir", type=pathlib.Path, default="/mounts/Datasets1/ChallengeDeep/test"
     )
     parser.add_argument("--batch_size", default=64)
     parser.add_argument("--classidx", type=int, default=None)
@@ -659,11 +650,11 @@ if __name__ == "__main__":
 
     # get_stats(args)
     # test_dataset(args)
-    test_transforms(args)
+    # test_transforms(args)
     # test_dataloader(args)
     # print(len(dataloader))
 
-    # test_augmentations(args)
+    test_augmentations(args)
     # test_augmented_dataloader(args)
     # test_sampler(args)
     # test_preprocessed(args)
