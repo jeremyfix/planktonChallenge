@@ -414,10 +414,26 @@ Mixup regularization was also introduced. In mixup, every sample $(x, y)$ is bui
 
 \paragraph{Class imbalance}: every minibatch is built by sampling the samples of the training folds with a weight equals to the inverse of the number of samples of the same class.
 
-The cross entropy loss for the training set and the F1 score for the validation split are shown on figure~\ref{fig:sample_submission_losses}. The confusion matrices of the best parameters for the four trained networks are shown on figure~\ref{fig:sample_submission_confusion_matrix}. For every run, the best parameters are the one with the largest validation F1 score. 
+The cross entropy loss for the training and validation sets and the F1 score for the validation split are shown on figure~\ref{fig:sample_submission_train_CE}-\ref{fig:sample_submission_test_F1}. The confusion matrices of the best parameters for the four trained networks are shown on figure~\ref{fig:sample_submission_confusion_matrix}. For every run, the best parameters are the one with the largest validation F1 score. 
 
-\begin{figure}[!htbp]
-	\caption{\label{fig:sample_submission_losses} The cross entropy loss on the training set and the macro F1 score on the validation fold for the four trained models.}
+\begin{figure}
+	\centering
+	\def\svgwidth{0.5\columnwidth}
+	\input{figs/metrics_train_CE.pdf_tex}
+	\caption{\label{fig:sample_submission_train_CE}Averaged train cross entropy.Each were allowed to run for 48 hours. Light blue is resnet18, dark blue is resnet152, orange is regnety\_16 and red is efficientnet b3. }
+\end{figure}
+\begin{figure}
+	\centering
+	\def\svgwidth{0.5\columnwidth}
+	\input{figs/metrics_test_CE.pdf_tex}
+	\caption{\label{fig:sample_submission_valid_CE}Averaged cross entropy on the validation fold.Each were allowed to run for 48 hours. Light blue is resnet18, dark blue is resnet152, orange is regnety\_16 and red is efficientnet b3. }
+\end{figure}
+
+\begin{figure}
+	\centering
+	\def\svgwidth{0.5\columnwidth}
+	\input{figs/metrics_fix_test_F1.pdf_tex}
+	\caption{\label{fig:sample_submission_test_F1}Macro F1 scores on the validation fold for the four trained sample submissions. Each were allowed to run for 48 hours. Light blue is resnet18, dark blue is resnet152, orange is regnety\_16 and red is efficientnet b3. }
 \end{figure}
 
 
