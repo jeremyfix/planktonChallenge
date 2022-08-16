@@ -1,6 +1,6 @@
 # 2022 3MD4040 Challenge on plankton classification
 
-[https://zenodo.org/badge/DOI/10.5281/zenodo.6998293.svg](https://zenodo.org/record/6998293#.Yvu0xGFBxhE)
+[Zenodo link](https://zenodo.org/badge/DOI/10.5281/zenodo.6998293.svg]
 
 
 ![header](https://github.com/jeremyfix/planktonChallenge/blob/main/header.png?raw=true)
