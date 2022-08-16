@@ -393,9 +393,15 @@ We provide a sample submission on the repository \url{https://github.com/jeremyf
 
 The training data are split in a training fold and a validation fold of $0.9/0.1$. The split is stratified meaning every class has $90\%$ of its samples in the training set and the remaining $10\%$ in the validation set. The sample code preprocesses and splits the data once for all making later simulations faster.
 
-\paragraph{Train augmentation}: the samples can be horizontally or vertically flipped, rotated (missing pixels are filled with white). CoarseDropout is also used to mask randomly parts of the image. Finally, as the images appeared to be sometimes blury, motion blur is added.
+\paragraph{Train augmentation}: the samples can be horizontally or vertically flipped, rotated (missing pixels are filled with white). Coarse dropout, where little square regions are filled in white, is also used to mask randomly parts of the image. Examples of augmented images are shown on figure~\ref{fig:sample_submission_augmented}.
 
-%TODO : Add augmented samples
+\begin{figure}[htbp]
+	\begin{center}
+	\includegraphics[width=0.75\columnwidth]{figs/augmented_images.pdf}
+	\caption{\label{fig:sample_submission_augmented} Examples of augmented images from the sample submission. The transforms are Horizontal flip, vertical flip, random rotation and coarse dropout. The first column represents the original images and the five following columns examples of augmented images. The little white squares on the images show the coarse dropout.}
+	\end{center}
+\end{figure}
+
 
 There is no test time augmentation.
 
@@ -408,7 +414,59 @@ Mixup regularization was also introduced. In mixup, every sample $(x, y)$ is bui
 
 \paragraph{Class imbalance}: every minibatch is built by sampling the samples of the training folds with a weight equals to the inverse of the number of samples of the same class.
 
-%TODO: add training/validation curves and the confusion matrices for the 4 models : resnet18, resnet152, regnety_016 and efficientnet_b3
+The cross entropy loss for the training set and the F1 score for the validation split are shown on figure~\ref{fig:sample_submission_losses}. The confusion matrices of the best parameters for the four trained networks are shown on figure~\ref{fig:sample_submission_confusion_matrix}. For every run, the best parameters are the one with the largest validation F1 score. 
+
+\begin{figure}[!htbp]
+	\caption{\label{fig:sample_submission_losses} The cross entropy loss on the training set and the macro F1 score on the validation fold for the four trained models.}
+\end{figure}
+
+
+
+\begin{figure}[htbp]
+	\begin{center}
+		\raisebox{-0.5\height}{\includegraphics[width=0.25\columnwidth]{figs/class_f1_scores_per_team_sample.pdf}}
+		\hspace*{.4in}
+		\raisebox{-0.5\height}{\includegraphics[width=0.62\columnwidth]{figs/class_f1_scores_per_class_sample.pdf}}
+	\end{center}
+	\caption{\label{fig:class_team_score_sample} Class F1 scores on the test data per model (left) and per class (right).}
+\end{figure}
+
+\begin{figure}[!htbp]
+	\begin{tabular}{ccccc}
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_resnet18.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_resnet152.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_efficientnetb3.png}&
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_regnety16.png} &
+		\includegraphics[width=0.18\columnwidth]{figs/confusion_matrix_average.png}\\
+		Resnet18 & Resnet152 & EfficientNet B3 & Regnety 16 & Average model
+	\end{tabular}
+	\caption{\label{fig:sample_submission_confusion_matrix} Confusion matrices on the validation fold of the best parameters for the four trained models.}
+\end{figure}
+
+
+The macro F1 scores on the public and private test sets of the four trained models are given in table~\ref{table:sample_submission_scores}. We also provide the score for the entry which predicts the class as the one maximizing the average probability of the four models. The class F1 scores for each sample submission per model and per class are displayed on the figure~\ref{fig:class_team_score_sample}. 
+
+\begin{table}[htbp]
+	\begin{center}
+	\begin{tabular}{|c|c|c|}
+		\hline
+		Model & Public macro F1 & Private macro F1 \\
+		\hline
+		Resnet18 & 0.79723 & 0.79344 \\
+		Resnet152 & 0.80178 & 0.79714 \\
+		EfficientNet b3 & 0.80041 & 0.80489\\
+		Regnety 16 & 0.80178 & 0.79714 \\
+		\hline\hline
+		Average model & 0.82687 & 0.82997\\
+		\hline
+	\end{tabular}
+	\end{center}
+	\caption{\label{table:sample_submission_scores} Macro F1 scores on the public and private test sets of the challenge.}
+		
+\end{table}
+
+
+
 
 
 
