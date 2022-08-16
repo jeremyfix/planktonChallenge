@@ -93,7 +93,7 @@ if __name__ == "__main__":
     plt.xlabel("Team name")
     plt.ylabel("Class F1 scores")
     plt.xticks(rotation=45, ha="right")
-    plt.savefig("../figs/class_f1_scores_per_team.pdf", bbox_inches="tight")
+    plt.savefig("class_f1_scores_per_team.pdf", bbox_inches="tight")
 
     print(class_stats[teams].T.head())
 
@@ -102,7 +102,7 @@ if __name__ == "__main__":
     plt.xlabel("Class")
     plt.ylabel("Class F1 scores")
     plt.xticks(rotation=45, ha="center")
-    plt.savefig("../figs/class_f1_scores_per_class.pdf", bbox_inches="tight")
+    plt.savefig("class_f1_scores_per_class.pdf", bbox_inches="tight")
 
     # Get the best predicted classes and the worst ones
     stats = class_stats[teams].T.describe().T
@@ -116,7 +116,7 @@ if __name__ == "__main__":
     print(f"The min F1 over all the teams being :\n {best_predicted_f1}")
 
     # Generate and save the latex tables to be included in the paper
-    with open("../figs/table_best_predicted.tex", "w") as f:
+    with open("table_best_predicted.tex", "w") as f:
         f.write(
             """
 \\begin{table}
@@ -139,7 +139,7 @@ $0.8$.}
 \\end{table}
                 """
         )
-    with open("../figs/table_worst_predicted.tex", "w") as f:
+    with open("table_worst_predicted.tex", "w") as f:
         f.write(
             """
 \\begin{table}
