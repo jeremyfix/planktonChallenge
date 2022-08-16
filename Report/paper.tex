@@ -275,35 +275,39 @@ That overview is built from inspection of the submitted codes and may not reflec
 			\\
 			\hline
 			CelestineFeuillat & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+				Resize($224$), RandAugment(num\_ops=4, magnitude=7, fill=255), ImageNet normalize 
+			& None 
+			& None
+			& LinearNet, custom CNN, torchvision pretrained resnet18, resnet50
+				& Weighted cross entropy() loss, Adam($0.001$),early stopping on validation F1, train/valid random split ($0.9, 0.1$), batch size $128$
+				&class weights in the CE loss $w_k=\frac{\sum_i count_i}{86 count_k})$,
 			\\
 			\hline
 			LesJongleurs & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+			Resize($224$), Normalize($0.5$, $0.5$) 
+			&  None
+			& None
+			& LinearNet, torchvision pretrained resnet18, resnet50 
+			& weighted cross entropy, Adam($0.001$), early stopping on validation F1, train/valid random split ($0.8, 0.2$)
+			&class weights in the CE loss $w_k=\frac{\sum_i count_i}{count_k})$,
 			\\
 			\hline
 			DeepBeru4s & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+			Resize($256$), CenterCrop($224$), Resize($256$), ImageNet Normalize 
+			& HFlip ($0.5$), RandomRotate ($-15,15$)
+			& HFlip ($0.5$), RandomRotate ($-15,15$)
+			&  Linear, custom CNN, torchvision pretrained resnet34, resnet50, resnet152 with a possibly frozen backbone
+				& weighted cross entropy loss or F1 loss\footnote{actually incorrectly coded}, Adam($0.001$), early stopping on validation weighted cross entropy, train/valid  random split ($0.8, 0.2$), batch size $128$ 
+			&class weights in the CE loss $w_k=\frac{86}{count_k})$,batch sampler with $f_k = 1/count_k$
 			\\
 			\hline
-			The Whale Sharks & 
-			Resize($224$), Normalize($0.5$, $0.5$) & 
-			&
-			&
-			&
-			&
+			The Whale Sharks 
+				& Invert, CenterCrop($300$) or Resize($300$), Normalize($0.013$,$0.0546$)
+				& HFlip($0.5$), RandomRotate, Blur,
+			& None
+			& custom CNN, torchvision pretrained resnet101, resnet152, vgg16, vgg19
+				& cross entropy loss or micro average F1 loss, Adam($0.001$), early stopping on the batch averaged micro average F1, train/valid random split ($0.8, 0.2$), batch size $256$ 
+				& batch sampler with $f_k = 1/count_k$
 			\\
 		\end{tabular}
 			\caption{Overview of the experiments of the participants. Part 3. \label{table:overview3}}
